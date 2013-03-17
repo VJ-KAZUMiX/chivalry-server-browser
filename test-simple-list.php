@@ -10,18 +10,6 @@
 require_once "steam-condenser-php/lib/steam-condenser.php";
 require_once "GeoIP/php-1.12/geoip.inc";
 
-
-/*
-$gi = geoip_open("GeoIP/GeoIP.dat",GEOIP_STANDARD);
-
-echo geoip_country_code_by_addr($gi, "24.24.24.24") . "\t" .
-    geoip_country_name_by_addr($gi, "24.24.24.24") . "\n";
-echo geoip_country_code_by_addr($gi, "122.18.205.206") . "\t" .
-    geoip_country_name_by_addr($gi, "122.18.205.206") . "\n";
-
-geoip_close($gi);
-*/
-
 // error handler
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
@@ -38,6 +26,18 @@ $masterServer = new MasterServer(MasterServer::SOURCE_MASTER_SERVER);
 $serverArray = $masterServer->getServers(MasterServer::REGION_ALL, "\\type\\d\\gamedir\\chivalrymedievalwarfare");
 
 //var_dump($masterServer);
+
+
+// throw exception test
+$server = new GoldSrcServer('192.168.1.192', 80);
+try {
+    $server->initialize();
+    $players = $server->getPlayers();
+    $serverInfo = $server->getServerInfo();
+    var_dump($serverInfo);
+} catch (Exception $e) {
+    var_dump($e);
+}
 
 $gi = geoip_open("GeoIP/GeoIP.dat",GEOIP_STANDARD);
 $countryList = array();
