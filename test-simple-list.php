@@ -60,6 +60,7 @@ foreach ($serverArray as $server) {
         $players = $server->getPlayers();
         $serverInfo = $server->getServerInfo();
         var_dump($serverInfo);
+        var_dump($players);
     }
 }
 
