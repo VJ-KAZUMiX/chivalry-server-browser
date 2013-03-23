@@ -1,3 +1,6 @@
 [submodule "steam-condenser-php"]
 	path = steam-condenser-php
 	url = git@github.com:koraktor/steam-condenser-php.git
+[submodule "country-list"]
+	path = country-list
+	url = git@github.com:umpirsky/country-list.git
