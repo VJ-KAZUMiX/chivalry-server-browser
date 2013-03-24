@@ -4,3 +4,6 @@
 [submodule "country-list"]
 	path = country-list
 	url = git@github.com:umpirsky/country-list.git
+[submodule "world-flags-sprite"]
+	path = world-flags-sprite
+	url = git@github.com:lafeber/world-flags-sprite.git
