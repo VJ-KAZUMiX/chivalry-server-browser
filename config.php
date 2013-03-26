@@ -15,8 +15,8 @@ switch ($_SERVER['SERVER_NAME']) {
 
     default:
         define('DB_HOST', 'localhost');
+        define('DB_NAME', 'steam');
         define('DB_USER', 'steam');
         define('DB_PASS', 'steam');
-        define('DB_NAME', 'steam');
         break;
 }
