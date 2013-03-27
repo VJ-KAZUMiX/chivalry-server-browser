@@ -52,4 +52,37 @@ class GameServerManager {
     private function __construct() {
 
     }
+
+    private function addGameServer($ipAddress, $portNo) {
+        $connection = self::getSqlConnection();
+
+        // check already registered
+        $sql = 'SELECT * FROM  `game_servers` WHERE  `ip` = :ip AND  `query_port` = :query_port';
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
+        $statement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        // set no_response_counter to 0 if the record exist
+        if ($result) {
+            $gameServerId = $result['game_server_id'];
+            $sql = 'UPDATE `game_servers` SET `no_response_counter` = 0 WHERE `game_server_id` = :game_server_id';
+            $statement = $connection->prepare($sql);
+            $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+            $statement->execute();
+            return;
+        }
+
+        // insert a new record
+        $country = 'XX';
+        $sql = 'INSERT INTO `game_servers` (`ip`, `country`, `query_port`, `no_response_counter`, `game_server_update`)
+         VALUES (:ip, :country, :query_port, 0, :game_server_update)';
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
+        $statement->bindParam(':country', $country, PDO::PARAM_STR);
+        $statement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
+        $statement->bindParam(':game_server_update', time(), PDO::PARAM_INT);
+        $statement->execute();
+    }
 }
