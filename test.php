@@ -7,4 +7,22 @@
  * To change this template use File | Settings | File Templates.
  */
 
-phpinfo();
+//phpinfo();
+
+require_once 'GameServerManager.php';
+
+class TestManager {
+
+    public function __construct() {
+
+    }
+
+    public function test() {
+        $gameServerManager = GameServerManager::sharedManager();
+
+        $gameServerManager->addGameServer('localhost', time());
+    }
+}
+
+$testManager = new TestManager();
+$testManager->test();

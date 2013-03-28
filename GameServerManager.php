@@ -7,7 +7,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-require_once "config.php"
+require_once "config.php";
 require_once "steam-condenser-php/lib/steam-condenser.php";
 require_once "GeoIP/php-1.12/geoip.inc";
 
@@ -53,7 +53,7 @@ class GameServerManager {
 
     }
 
-    private function addGameServer($ipAddress, $portNo) {
+    public function addGameServer($ipAddress, $portNo) {
         $connection = self::getSqlConnection();
 
         // check already registered
@@ -79,10 +79,11 @@ class GameServerManager {
         $sql = 'INSERT INTO `game_servers` (`ip`, `country`, `query_port`, `no_response_counter`, `game_server_update`)
          VALUES (:ip, :country, :query_port, 0, :game_server_update)';
         $statement = $connection->prepare($sql);
+        $updateTime = time();
         $statement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
         $statement->bindParam(':country', $country, PDO::PARAM_STR);
         $statement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
-        $statement->bindParam(':game_server_update', time(), PDO::PARAM_INT);
+        $statement->bindParam(':game_server_update', $updateTime, PDO::PARAM_INT);
         $statement->execute();
     }
 }
