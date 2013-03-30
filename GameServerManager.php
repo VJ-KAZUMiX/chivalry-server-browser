@@ -16,6 +16,9 @@ require_once "GeoIP/php-1.12/geoip.inc";
  */
 class GameServerManager {
 
+    const GAME_SERVER_ADDED = 'GAME_SERVER_ADDED';
+    const GAME_SERVER_UPDATED = 'GAME_SERVER_UPDATED';
+
     /**
      * @var GameServerManager
      */
@@ -49,10 +52,34 @@ class GameServerManager {
         return self::$sqlConnection;
     }
 
+    /**
+     * @var GeoIP
+     */
+    private static $geoIp;
+
+    /**
+     * @return GeoIP
+     */
+    private static function getGeoIp() {
+        if (!self::$geoIp) {
+
+            self::$geoIp = geoip_open("GeoIP/GeoIP.dat",GEOIP_STANDARD);
+        }
+
+        return self::$geoIp;
+    }
+
     private function __construct() {
 
     }
 
+    /**
+     * Add a server.
+     * If the server already exists, update no_response_counter to 0.
+     * @param $ipAddress
+     * @param $portNo
+     * @return string
+     */
     public function addGameServer($ipAddress, $portNo) {
         $connection = self::getSqlConnection();
 
@@ -71,11 +98,11 @@ class GameServerManager {
             $statement = $connection->prepare($sql);
             $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
             $statement->execute();
-            return;
+            return self::GAME_SERVER_UPDATED;
         }
 
         // insert a new record
-        $country = 'XX';
+        $country = geoip_country_code_by_addr(self::getGeoIp(), $ipAddress);
         $sql = 'INSERT INTO `game_servers` (`ip`, `country`, `query_port`, `no_response_counter`, `game_server_update`)
          VALUES (:ip, :country, :query_port, 0, :game_server_update)';
         $statement = $connection->prepare($sql);
@@ -85,5 +112,6 @@ class GameServerManager {
         $statement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
         $statement->bindParam(':game_server_update', $updateTime, PDO::PARAM_INT);
         $statement->execute();
+        return self::GAME_SERVER_ADDED;
     }
 }

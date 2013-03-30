@@ -14,7 +14,7 @@ ob_start("ob_gzhandler");
 switch ($_SERVER['SERVER_NAME']) {
 
     default:
-        define('DB_HOST', 'localhost');
+        define('DB_HOST', '127.0.0.1');
         define('DB_NAME', 'steam');
         define('DB_USER', 'steam');
         define('DB_PASS', 'steam');

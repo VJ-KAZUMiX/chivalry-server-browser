@@ -20,7 +20,9 @@ class TestManager {
     public function test() {
         $gameServerManager = GameServerManager::sharedManager();
 
-        $gameServerManager->addGameServer('localhost', time());
+        for ($i=0; $i<100; $i++) {
+            $gameServerManager->addGameServer(rand(1,254) . '.' . rand(1,254) . '.' . rand(1,254) . '.' . rand(1,254), rand(0, 100));
+        }
     }
 }
 
