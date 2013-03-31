@@ -13,18 +13,30 @@ require_once 'GameServerManager.php';
 
 class TestManager {
 
-    public function __construct() {
+    /**
+     * @var GameServerManager
+     */
+    private $gameServerManager;
 
+    public function __construct() {
+        $this->gameServerManager = GameServerManager::sharedManager();
     }
 
     public function test() {
-        $gameServerManager = GameServerManager::sharedManager();
+        $gameServerManager = $this->gameServerManager;
 
         for ($i=0; $i<100; $i++) {
             $gameServerManager->addGameServer(rand(1,254) . '.' . rand(1,254) . '.' . rand(1,254) . '.' . rand(1,254), rand(0, 100));
         }
     }
+
+    public function testUpdateMaster() {
+        $gameServerManager = $this->gameServerManager;
+        $gameServerManager->updateWithMasterServer();
+    }
 }
 
 $testManager = new TestManager();
-$testManager->test();
+;$testManager->test();
+$testManager->testUpdateMaster();
+

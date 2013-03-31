@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2013 年 3 月 24 日 09:33
+-- 生成日時: 2013 年 3 月 31 日 18:38
 -- サーバのバージョン: 5.5.27
 -- PHP のバージョン: 5.4.7
 
@@ -32,7 +32,6 @@ CREATE TABLE IF NOT EXISTS `game_players` (
   `game_server_id` int(10) unsigned NOT NULL,
   `player_connection_time` int(10) unsigned NOT NULL,
   `player_score` int(11) NOT NULL,
-  `player_fixed_score_counter` int(10) unsigned NOT NULL,
   `player_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`game_player_id`),
   KEY `game_server_id` (`game_server_id`)
