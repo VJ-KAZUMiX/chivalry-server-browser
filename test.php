@@ -34,9 +34,15 @@ class TestManager {
         $gameServerManager = $this->gameServerManager;
         $gameServerManager->updateWithMasterServer();
     }
+
+    public function testUpdateIndividualServerInfo() {
+        $gameServerManager = $this->gameServerManager;
+        $gameServerManager->updateIndividualServerInfo();
+    }
 }
 
 $testManager = new TestManager();
-;$testManager->test();
-$testManager->testUpdateMaster();
+//$testManager->test();
+//$testManager->testUpdateMaster();
+$testManager->testUpdateIndividualServerInfo();
 
