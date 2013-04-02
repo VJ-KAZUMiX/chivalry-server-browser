@@ -171,8 +171,6 @@ class GameServerManager {
         $updateServerStatement = $connection->prepare($sql);
         $updateTime = time();
 
-        echo 'start:' . time() . '<br />';
-
         // update each server info
         while ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
             $ipAddress = $gameServerRecord['ip'];
@@ -235,6 +233,5 @@ class GameServerManager {
             $updateServerStatement->execute();
         }
 
-        echo 'end:' . time() . '<br />';
     }
 }
