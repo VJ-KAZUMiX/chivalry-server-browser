@@ -20,3 +20,7 @@ switch ($_SERVER['SERVER_NAME']) {
         define('DB_PASS', 'steam');
         break;
 }
+
+function get_country_assoc() {
+    require_once 'country-list/country/cldr/en/country.php';
+}

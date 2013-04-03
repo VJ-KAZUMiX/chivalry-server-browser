@@ -158,6 +158,9 @@ class GameServerManager {
         return count($serverList);
     }
 
+    /**
+     * Update each server info
+     */
     public function updateIndividualServerInfo() {
         // getting server list from DB
         $connection = $this->getSqlConnection();
@@ -232,6 +235,13 @@ class GameServerManager {
             $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
             $updateServerStatement->execute();
         }
+    }
+
+    /**
+     * @param array $countryCodeList
+     * @return array
+     */
+    public function getServerList($countryCodeList) {
 
     }
 }
