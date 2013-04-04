@@ -239,9 +239,44 @@ class GameServerManager {
 
     /**
      * @param array $countryCodeList
+     * @return PDOStatement
+     */
+    private function getStatementFroServerList($countryCodeList) {
+        $connection = $this->getSqlConnection();
+
+        // all if no arg
+        if (!$countryCodeList || count($countryCodeList) === 0) {
+            $sql = 'SELECT * FROM `game_servers` ORDER BY `country`, `server_name` ASC';
+            $statement = $connection->prepare($sql);
+            return $statement;
+        }
+
+        //$sql = "SELECT * FROM `game_servers` WHERE `country` IN (\'JP\',\'KR\')";
+
+        $placeNameList = array();
+        for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {
+            $placeName = ":country_code_$i";
+            $placeNameList[$i] = $placeName;
+        }
+        $joinedPlaceName = implode(',', $placeNameList);
+        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName)";
+        $statement = $connection->prepare($sql);
+
+        for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {
+            $countryCode = $countryCodeList[$i];
+            $placeName = $placeNameList[$i];
+            $statement->bindValue($placeName, $countryCode, PDO::PARAM_STR);
+        }
+        return $statement;
+    }
+
+    /**
+     * @param array $countryCodeList
      * @return array
      */
     public function getServerList($countryCodeList) {
+
+
 
     }
 }
