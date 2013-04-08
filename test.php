@@ -39,10 +39,20 @@ class TestManager {
         $gameServerManager = $this->gameServerManager;
         $gameServerManager->updateIndividualServerInfo();
     }
+
+    public function testGetServerList() {
+        $gameServerManager = $this->gameServerManager;
+        $serverList = $gameServerManager->getServerList(array('JP', 'KR'));
+
+        var_dump($serverList);
+    }
 }
 
 $testManager = new TestManager();
 //$testManager->test();
 //$testManager->testUpdateMaster();
-$testManager->testUpdateIndividualServerInfo();
+//$testManager->testUpdateIndividualServerInfo();
+$testManager->testGetServerList();
+
+
 

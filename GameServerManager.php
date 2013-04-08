@@ -241,7 +241,7 @@ class GameServerManager {
      * @param array $countryCodeList
      * @return PDOStatement
      */
-    private function getStatementFroServerList($countryCodeList) {
+    private function getStatementForServerList($countryCodeList = null) {
         $connection = $this->getSqlConnection();
 
         // all if no arg
@@ -259,7 +259,7 @@ class GameServerManager {
             $placeNameList[$i] = $placeName;
         }
         $joinedPlaceName = implode(',', $placeNameList);
-        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName)";
+        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) ORDER BY `country`, `server_name` ASC";
         $statement = $connection->prepare($sql);
 
         for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {
@@ -274,9 +274,11 @@ class GameServerManager {
      * @param array $countryCodeList
      * @return array
      */
-    public function getServerList($countryCodeList) {
+    public function getServerList($countryCodeList = null) {
+        $statement = $this->getStatementForServerList($countryCodeList);
+        $statement->execute();
+        $serverList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-
-
+        return $serverList;
     }
 }
