@@ -85,7 +85,7 @@ class GameServerManager {
 
     /**
      * Add a server.
-     * If the server already exists, update no_response_counter to 0.
+     * If the server already exists, reset no_response_counter to 0.
      * @param string $ipAddress
      * @param number $portNo
      * @return string
@@ -103,7 +103,7 @@ class GameServerManager {
 
         $updateTime = time();
 
-        // set no_response_counter to 0 if the record exist
+        // reset no_response_counter to 0 if the record exist
         if ($result) {
             $gameServerId = $result['game_server_id'];
             $sql = 'UPDATE `game_servers` SET `no_response_counter` = 0, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id';
@@ -161,7 +161,7 @@ class GameServerManager {
     /**
      * Update each server info
      */
-    public function updateIndividualServerInfo() {
+    public function updateAllServerInfo() {
         // getting server list from DB
         $connection = $this->getSqlConnection();
         $sql = 'SELECT * FROM `game_servers` WHERE `no_response_counter` < 3';
@@ -235,6 +235,71 @@ class GameServerManager {
             $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
             $updateServerStatement->execute();
         }
+    }
+
+    /**
+     * Update the server info of game_server_id
+     * @param $gameServerId
+     * @return bool
+     */
+    public function updateTargetServerInfo($gameServerId) {
+        // get current info from DB
+        $connection = $this->getSqlConnection();
+        $sql = 'SELECT * FROM `game_servers` WHERE `game_server_id` = :game_server_id';
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+        $statement->execute();
+
+        // prepare
+        $noResponse = false;
+        $updateTime = time();
+        $gameServerRecord = null;
+        $serverInfo = null;
+
+        // update if the record exists
+        if ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $ipAddress = $gameServerRecord['ip'];
+            $queryPort = $gameServerRecord['query_port'];
+            $country = $gameServerRecord['country'];
+
+            try {
+                $srcServer = new GoldSrcServer($ipAddress, $queryPort);
+                //$srcServer->initialize();
+                //$players = $srcServer->getPlayers();
+                $serverInfo = $srcServer->getServerInfo();
+            } catch (Exception $e) {
+                $noResponse = true;
+            }
+        } else {
+            return false;
+        }
+
+        if (!$noResponse) {
+            $sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `game_dir` = :game_dir, `game_desc` = :game_desc, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            $updateServerStatement = $connection->prepare($sql);
+            $updateServerStatement->bindParam(':server_name', $serverInfo['serverName']);
+            $updateServerStatement->bindParam(':game_port',  $serverInfo['serverPort']);
+            $updateServerStatement->bindParam(':map_name',  $serverInfo['mapName']);
+            $updateServerStatement->bindParam(':game_dir',  $serverInfo['gameDir']);
+            $updateServerStatement->bindParam(':game_desc',  $serverInfo['gameDesc']);
+            $updateServerStatement->bindParam(':max_players',  $serverInfo['maxPlayers']);
+            $updateServerStatement->bindParam(':number_of_players',  $serverInfo['numberOfPlayers']);
+            $updateServerStatement->bindValue(':no_response_counter',  0);
+            $updateServerStatement->bindParam(':game_server_update',  $updateTime);
+            $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
+            $updateServerStatement->execute();
+        } else {
+            // update the servers did not respond
+            $sql = "UPDATE `game_servers` SET `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            $updateServerStatement = $connection->prepare($sql);
+            $noResponseCounter = $gameServerRecord['no_response_counter'] + 1;
+            $updateServerStatement->bindParam(':no_response_counter', $noResponseCounter);
+            $updateServerStatement->bindParam(':game_server_update', $updateTime);
+            $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
+            $updateServerStatement->execute();
+        }
+
+        return true;
     }
 
     /**

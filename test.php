@@ -37,7 +37,7 @@ class TestManager {
 
     public function testUpdateIndividualServerInfo() {
         $gameServerManager = $this->gameServerManager;
-        $gameServerManager->updateIndividualServerInfo();
+        $gameServerManager->updateAllServerInfo();
     }
 
     public function testGetServerList() {
