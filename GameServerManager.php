@@ -239,7 +239,7 @@ class GameServerManager {
 
     /**
      * Update the server info of game_server_id
-     * @param $gameServerId
+     * @param int $gameServerId
      * @return bool
      */
     public function updateTargetServerInfo($gameServerId) {
@@ -260,7 +260,7 @@ class GameServerManager {
         if ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
             $ipAddress = $gameServerRecord['ip'];
             $queryPort = $gameServerRecord['query_port'];
-            $country = $gameServerRecord['country'];
+            //$country = $gameServerRecord['country'];
 
             try {
                 $srcServer = new GoldSrcServer($ipAddress, $queryPort);
@@ -306,7 +306,7 @@ class GameServerManager {
      * @param array $countryCodeList
      * @return PDOStatement
      */
-    private function getStatementForServerList($countryCodeList = null) {
+    private function getPDOStatementForServerList($countryCodeList = null) {
         $connection = $this->getSqlConnection();
 
         // all if no arg
@@ -340,7 +340,7 @@ class GameServerManager {
      * @return array
      */
     public function getServerList($countryCodeList = null) {
-        $statement = $this->getStatementForServerList($countryCodeList);
+        $statement = $this->getPDOStatementForServerList($countryCodeList);
         $statement->execute();
         $serverList = $statement->fetchAll(PDO::FETCH_ASSOC);
 

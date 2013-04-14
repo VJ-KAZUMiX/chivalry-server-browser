@@ -46,13 +46,25 @@ class TestManager {
 
         var_dump($serverList);
     }
+
+    public function testUpdateSync() {
+        $gameServerManager = $this->gameServerManager;
+        $serverList = $gameServerManager->getServerList(array('JP', 'KR'));
+
+        foreach ($serverList as $serverRecord) {
+            $gameServerId = $serverRecord['game_server_id'];
+            $gameServerManager->updateTargetServerInfo($gameServerId);
+        }
+
+    }
 }
 
 $testManager = new TestManager();
 //$testManager->test();
 //$testManager->testUpdateMaster();
 //$testManager->testUpdateIndividualServerInfo();
-$testManager->testGetServerList();
+//$testManager->testGetServerList();
+$testManager->testUpdateSync();
 
 
 
