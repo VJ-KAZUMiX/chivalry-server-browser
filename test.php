@@ -8,6 +8,9 @@
  */
 
 //phpinfo();
+//var_dump($_SERVER);
+//$parentDir = pathinfo($_SERVER['PHP_SELF']);
+//var_dump($parentDir);
 
 require_once 'GameServerManager.php';
 
@@ -64,7 +67,7 @@ $testManager = new TestManager();
 //$testManager->testUpdateMaster();
 //$testManager->testUpdateIndividualServerInfo();
 //$testManager->testGetServerList();
-$testManager->testUpdateSync();
+//$testManager->testUpdateSync();
 
 
 
