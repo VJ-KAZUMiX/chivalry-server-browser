@@ -8,7 +8,7 @@
  */
 
 //phpinfo();
-//var_dump($_SERVER);
+var_dump($_SERVER);
 //$parentDir = pathinfo($_SERVER['PHP_SELF']);
 //var_dump($parentDir);
 
