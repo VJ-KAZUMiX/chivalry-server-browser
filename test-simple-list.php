@@ -28,16 +28,16 @@ $serverArray = $masterServer->getServers(MasterServer::REGION_ALL, "\\type\\d\\g
 //var_dump($masterServer);
 
 
-// throw exception test
-$server = new GoldSrcServer('192.168.1.192', 80);
-try {
-    $server->initialize();
-    $players = $server->getPlayers();
-    $serverInfo = $server->getServerInfo();
-    var_dump($serverInfo);
-} catch (Exception $e) {
-    var_dump($e);
-}
+//// throw exception test
+//$server = new GoldSrcServer('192.168.1.192', 80);
+//try {
+//    $server->initialize();
+//    $players = $server->getPlayers();
+//    $serverInfo = $server->getServerInfo();
+//    var_dump($serverInfo);
+//} catch (Exception $e) {
+//    var_dump($e);
+//}
 
 $gi = geoip_open("GeoIP/GeoIP.dat",GEOIP_STANDARD);
 $countryList = array();

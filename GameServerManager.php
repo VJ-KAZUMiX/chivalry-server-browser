@@ -255,6 +255,7 @@ class GameServerManager {
         $updateTime = time();
         $gameServerRecord = null;
         $serverInfo = null;
+        $players = null;
 
         // update if the record exists
         if ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -265,8 +266,8 @@ class GameServerManager {
             try {
                 $srcServer = new GoldSrcServer($ipAddress, $queryPort);
                 //$srcServer->initialize();
-                //$players = $srcServer->getPlayers();
                 $serverInfo = $srcServer->getServerInfo();
+                $players = $srcServer->getPlayers();
             } catch (Exception $e) {
                 $noResponse = true;
             }
@@ -300,6 +301,22 @@ class GameServerManager {
         }
 
         return true;
+    }
+
+    /**
+     * @param int $gameServerId
+     * @param array $players
+     */
+    private function updatePlayers($gameServerId, $players) {
+        // get old players
+        $connection = $this->getSqlConnection();
+
+        // update matched players
+
+        // insert new players
+
+        // delete old players
+
     }
 
     /**

@@ -11,7 +11,7 @@ ignore_user_abort(TRUE);
 require_once 'config.php';
 require_once 'GameServerManager.php';
 
-$gameServerId = isset($_GET['serverId']) ? $_GET['serverId'] : 0;
+$gameServerId = isset($_GET['serverId']) ? intval($_GET['serverId']) : 0;
 if ($gameServerId === 0) {
     exit();
 }
