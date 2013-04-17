@@ -308,14 +308,48 @@ class GameServerManager {
      * @param array $players
      */
     private function updatePlayers($gameServerId, $players) {
+        $currentSteamPlayerList = array();
+        /** @var $steamPlayer SteamPlayer */
+        foreach ($players as $steamPlayer) {
+            $name = $steamPlayer->getName();
+            $currentSteamPlayerList[$name] = $steamPlayer;
+        }
+
         // get old players
         $connection = $this->getSqlConnection();
+        $sql = 'SELECT * FROM `game_players` WHERE `game_server_id` = :game_server_id';
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+        $statement->execute();
 
-        // update matched players
+        // update matched player records
+        $sql = "UPDATE `game_players` SET `player_connection_time` = :player_connection_time, `player_score` = :player_score, `player_update` = :player_update WHERE `game_player_id` = :game_player_id;";
+        $updateStatement = $connection->prepare($sql);
+        $sql = "DELETE FROM `game_players` WHERE `game_player_id` = :game_player_id";
+        $deleteStatement = $connection->prepare($sql);
+        while ($playerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $name = $playerRecord['player_name'];
+            if (isset($currentSteamPlayerList[$name])) {
+                // update
+                $steamPlayer = $currentSteamPlayerList[$name];
+                $updateStatement->bindValue(':player_connection_time', $steamPlayer->getConnectTime());
+                $updateStatement->bindValue(':player_score', $steamPlayer->getScore());
+                $updateStatement->bindValue(':player_update', time());
+                $updateStatement->bindParam(':game_player_id', $playerRecord['game_player_id']);
+                $updateStatement->execute();
+
+                // remove updated player from the current list
+                unset($currentSteamPlayerList[$name]);
+            } else {
+                // delete the old player record
+                $deleteStatement->bindParam('game_player_id', $playerRecord['game_player_id']);
+                $deleteStatement->execute();
+            }
+        }
 
         // insert new players
 
-        // delete old players
+
 
     }
 
