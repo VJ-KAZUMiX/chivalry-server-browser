@@ -74,7 +74,7 @@ class GameServerManager {
     private static function getGeoIp() {
         if (!self::$geoIp) {
 
-            self::$geoIp = geoip_open("GeoIP/GeoIP.dat",GEOIP_STANDARD);
+            self::$geoIp = geoip_open(dirname(__FILE__) . "/GeoIP/GeoIP.dat",GEOIP_STANDARD);
         }
 
         return self::$geoIp;
@@ -101,14 +101,12 @@ class GameServerManager {
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        $updateTime = time();
-
         // reset no_response_counter to 0 if the record exist
         if ($result) {
             $gameServerId = $result['game_server_id'];
             $sql = 'UPDATE `game_servers` SET `no_response_counter` = 0, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id';
             $statement = $connection->prepare($sql);
-            $statement->bindParam(':game_server_update', $updateTime, PDO::PARAM_INT);
+            $statement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
             $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
             $statement->execute();
             return self::GAME_SERVER_UPDATED;
@@ -122,7 +120,7 @@ class GameServerManager {
         $statement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
         $statement->bindParam(':country', $country, PDO::PARAM_STR);
         $statement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
-        $statement->bindParam(':game_server_update', $updateTime, PDO::PARAM_INT);
+        $statement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
         $statement->execute();
         return self::GAME_SERVER_ADDED;
     }
@@ -289,6 +287,9 @@ class GameServerManager {
             $updateServerStatement->bindParam(':game_server_update',  $updateTime);
             $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
             $updateServerStatement->execute();
+
+            // update players
+            $this->updatePlayers($gameServerRecord['game_server_id'], $players);
         } else {
             // update the servers did not respond
             $sql = "UPDATE `game_servers` SET `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
@@ -348,9 +349,16 @@ class GameServerManager {
         }
 
         // insert new players
-
-
-
+        $sql = "INSERT INTO `game_players` (`game_player_id`, `player_name`, `game_server_id`, `player_connection_time`, `player_score`, `player_update`) VALUES (NULL, :player_name, :game_server_id, :player_connection_time, :player_score, :player_update);";
+        $insertStatement = $connection->prepare($sql);
+        foreach ($currentSteamPlayerList as $steamPlayer) {
+            $insertStatement->bindValue(':player_name', $steamPlayer->getName());
+            $insertStatement->bindValue(':game_server_id', $gameServerId);
+            $insertStatement->bindValue(':player_connection_time', $steamPlayer->getConnectTime());
+            $insertStatement->bindValue(':player_score', $steamPlayer->getScore());
+            $insertStatement->bindValue(':player_update', time());
+            $insertStatement->execute();
+        }
     }
 
     /**
@@ -396,5 +404,16 @@ class GameServerManager {
         $serverList = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $serverList;
+    }
+
+    /**
+     * @param int $noResponseCounter
+     */
+    public function deleteUnrespondedServers($noResponseCounter = 3) {
+        $connection = $this->getSqlConnection();
+        $sql = "DELETE FROM `game_servers` WHERE `no_response_counter` >= :no_response_counter";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':no_response_counter', $noResponseCounter);
+        $statement->execute();
     }
 }

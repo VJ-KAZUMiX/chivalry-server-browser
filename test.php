@@ -7,8 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
 
+echo dirname(__DIR__);
 //phpinfo();
-var_dump($_SERVER);
+//var_dump($_SERVER);
+exit();
 //$parentDir = pathinfo($_SERVER['PHP_SELF']);
 //var_dump($parentDir);
 
