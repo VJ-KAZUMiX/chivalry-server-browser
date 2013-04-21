@@ -58,7 +58,7 @@ class GameServerManager {
             $options = array(
                 PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8',
             );
-            $this->sqlConnection = new PDO('mysql:dbname=' . DB_NAME . ';host=' . DB_HOST, DB_NAME, DB_PASS, $options);
+            $this->sqlConnection = new PDO('mysql:dbname=' . DB_NAME . ';host=' . DB_HOST, DB_USER, DB_PASS, $options);
         }
         return $this->sqlConnection;
     }

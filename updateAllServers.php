@@ -23,7 +23,7 @@ $gameServerManager->deleteUnrespondedServers(5);
 // update all servers every 5 minutes
 $sec = time();
 $min = floor($sec / 60);
-if ($min % 5 === 0) {
+if ($min % 15 === 0) {
     $gameServerManager->updateWithMasterServer();
     $serverList = $gameServerManager->getServerList();
 } else {
