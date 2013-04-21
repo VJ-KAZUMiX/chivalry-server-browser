@@ -371,7 +371,8 @@ class GameServerManager {
 
         // all if no arg
         if (!$countryCodeList || count($countryCodeList) === 0) {
-            $sql = 'SELECT * FROM `game_servers` WHERE `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC';
+            //$sql = 'SELECT * FROM `game_servers` WHERE `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC';
+            $sql = 'SELECT * FROM `game_servers` ORDER BY `number_of_players` DESC, `server_name` ASC';
             $statement = $connection->prepare($sql);
             return $statement;
         }
@@ -384,7 +385,8 @@ class GameServerManager {
             $placeNameList[$i] = $placeName;
         }
         $joinedPlaceName = implode(',', $placeNameList);
-        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) AND `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC";
+        //$sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) AND `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC";
+        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) ORDER BY `number_of_players` DESC, `server_name` ASC";
         $statement = $connection->prepare($sql);
 
         for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {

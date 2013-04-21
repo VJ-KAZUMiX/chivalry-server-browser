@@ -13,7 +13,12 @@ require_once 'GameServerManager.php';
 
 $gameServerId = isset($_GET['serverId']) ? intval($_GET['serverId']) : 0;
 if ($gameServerId === 0) {
-    exit();
+    $gameServerId = isset($argv[1]) ? intval($argv[1]) : 0;
+
+    if ($gameServerId === 0) {
+        echo 'exit';
+        exit();
+    }
 }
 
 $gameServerManager = GameServerManager::sharedManager();
