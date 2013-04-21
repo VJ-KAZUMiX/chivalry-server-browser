@@ -27,7 +27,12 @@ if ($min % 5 === 0) {
     $gameServerManager->updateWithMasterServer();
     $serverList = $gameServerManager->getServerList();
 } else {
-    $serverList = $gameServerManager->getServerList(array('JP', 'KR'));
+    $serverList = $gameServerManager->getServerList(array('JP'));
+}
+// if the server list is empty, update all
+if (!count($serverList)) {
+    $gameServerManager->updateWithMasterServer();
+    $serverList = $gameServerManager->getServerList();
 }
 
 // update each server asyncronous

@@ -1,0 +1,103 @@
+@charset "utf-8";
+/* CSS Document */
+
+* {
+	font-size: 100%;
+}
+
+body {
+	font-family:"Times New Roman", Times, serif;
+	margin: 0px;
+	padding: 0px;
+	color: #333;
+}form {
+	margin: 0px;
+	padding: 0px;
+}
+#header {
+	padding-top: 3em;
+	padding-bottom: 3em;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCC;
+}
+.heading {
+	background-color: #EEE;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCC;
+	overflow: hidden;
+	zoom: 1;
+	margin-bottom: 2em;
+}
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+a,
+a:hover {
+	color: #69C;
+	font-weight: bold;
+}
+
+h1 {
+	margin: 0px;
+	padding: 0px;
+	font-size: 120%;
+}
+h1 a {
+	color: #333;
+}
+
+
+h2 {
+	margin: 0px;
+	padding-top: 1em;
+	padding-right: 0px;
+	padding-bottom: 1em;
+	padding-left: 0px;
+}
+
+
+
+.contents {
+	width: 920px;
+	margin-right: auto;
+	margin-left: auto;
+}
+.contentBody {
+	margin-bottom: 2em;
+}
+
+table {
+	width: 100%;
+}
+table th {
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #CCC;
+}
+td.mapName {
+	font-size: 90%;
+}
+td.ip {
+	font-size: 80%;
+}
+
+
+
+#footer {
+	padding-top: 1em;
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #CCC;
+	margin-top: 4em;
+}
+#footer p {
+	margin: 0px;
+	padding: 0px;
+	font-size: 90%;
+}

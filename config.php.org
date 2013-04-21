@@ -1,10 +1,6 @@
 <?php
 /**
- * Created by JetBrains PhpStorm.
- * User: KAZUMiX
- * Date: 13/03/24
- * Time: 17:38
- * To change this template use File | Settings | File Templates.
+ * rename this file to 'config.php' and setup following configurations
  */
 
 mb_internal_encoding("utf-8");
@@ -21,5 +17,5 @@ define('DB_USER', 'steam');
 define('DB_PASS', 'steam');
 
 function get_country_assoc() {
-    require_once 'country-list/country/cldr/en/country.php';
+    return require 'country-list/country/cldr/en/country.php';
 }

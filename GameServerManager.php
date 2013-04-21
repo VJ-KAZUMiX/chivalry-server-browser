@@ -71,7 +71,7 @@ class GameServerManager {
     /**
      * @return GeoIP
      */
-    private static function getGeoIp() {
+    public static function getGeoIp() {
         if (!self::$geoIp) {
 
             self::$geoIp = geoip_open(dirname(__FILE__) . "/GeoIP/GeoIP.dat",GEOIP_STANDARD);
@@ -114,6 +114,10 @@ class GameServerManager {
 
         // insert a new record
         $country = geoip_country_code_by_addr(self::getGeoIp(), $ipAddress);
+        if (!$country) {
+            // unknown or invalid region
+            $country = 'ZZ';
+        }
         $sql = 'INSERT INTO `game_servers` (`ip`, `country`, `query_port`, `no_response_counter`, `game_server_update`)
          VALUES (:ip, :country, :query_port, 0, :game_server_update)';
         $statement = $connection->prepare($sql);
@@ -157,6 +161,7 @@ class GameServerManager {
     }
 
     /**
+     * (Unused)
      * Update each server info
      */
     public function updateAllServerInfo() {
@@ -177,10 +182,6 @@ class GameServerManager {
             $ipAddress = $gameServerRecord['ip'];
             $queryPort = $gameServerRecord['query_port'];
             $country = $gameServerRecord['country'];
-
-            if ($country != 'JP' && $country != 'KR') {
-                //continue;
-            }
 
             $players = null;
             $serverInfo = null;
@@ -370,7 +371,7 @@ class GameServerManager {
 
         // all if no arg
         if (!$countryCodeList || count($countryCodeList) === 0) {
-            $sql = 'SELECT * FROM `game_servers` ORDER BY `country`, `server_name` ASC';
+            $sql = 'SELECT * FROM `game_servers` WHERE `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC';
             $statement = $connection->prepare($sql);
             return $statement;
         }
@@ -383,7 +384,7 @@ class GameServerManager {
             $placeNameList[$i] = $placeName;
         }
         $joinedPlaceName = implode(',', $placeNameList);
-        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) ORDER BY `country`, `server_name` ASC";
+        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) AND `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC";
         $statement = $connection->prepare($sql);
 
         for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {
@@ -415,5 +416,28 @@ class GameServerManager {
         $statement = $connection->prepare($sql);
         $statement->bindParam(':no_response_counter', $noResponseCounter);
         $statement->execute();
+    }
+
+    public function getServerInfo($gameServerId) {
+        $connection = $this->getSqlConnection();
+        $sql = "SELECT * FROM `game_servers` WHERE `game_server_id` = :game_server_id";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$gameServerRecord) {
+            return false;
+        }
+
+        $sql = "SELECT * FROM `game_players` WHERE `game_server_id` = :game_server_id ORDER BY `player_connection_time` DESC";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+        $statement->execute();
+
+        $gameServerRecord['players'] = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $gameServerRecord;
     }
 }
