@@ -21,49 +21,28 @@ $gameServerManager->deleteUnrespondedServers(5);
 // TODO: improve
 $sec = time();
 $min = floor($sec / 60);
-if ($min % 15 === 0) {
+if ($min % 15 === 0 || isset($_GET['force'])) {
     $gameServerManager->updateWithMasterServer();
     $serverList = $gameServerManager->getServerList();
 } else {
     $serverList = $gameServerManager->getServerList(array('JP'));
 }
-// if the server list is empty, update all
-if (!count($serverList)) {
-    $gameServerManager->updateWithMasterServer();
-    $serverList = $gameServerManager->getServerList();
-}
 
-if (USE_EXEC) {
-    foreach ($serverList as $serverRecord) {
-        $gameServerId = $serverRecord['game_server_id'];
+foreach ($serverList as $serverRecord) {
+    $gameServerId = $serverRecord['game_server_id'];
+
+    if (PHP_OS !== 'WIN32' && PHP_OS !== 'WINNT') {
         // making exec path
-        //$execPath = EXEC_PHP . " {$gameServerId}";
-        $execPath = EXEC_PHP . " {$gameServerId} > /dev/null &";
-        exec($execPath);
-        echo "Current time: " . time() . " [{$execPath}]<br />\n";
-        usleep(5 * 1000);
+        $command = EXEC_PHP . " {$gameServerId} > /dev/null &";
+        exec($command);
     }
-} else {
-    // making the php path for the fputs
-    $fputsPhpPath = HTTP_SERVER_PATH . 'updateTargetServer.php';
-    // update each server asyncronous
-    foreach ($serverList as $serverRecord) {
-        $gameServerId = $serverRecord['game_server_id'];
-        $fp = fsockopen (HTTP_SERVER_NAME, HTTP_SERVER_PORT, $errNo, $errStr, 5);
-        if (!$fp) {
-            echo "Error: $errStr ($errNo)<br>\n";
-        } else {
-            socket_set_blocking($fp, false);
-            fputs ($fp, "GET {$fputsPhpPath}?serverId={$gameServerId} HTTP/1.0\r\n\r\n");
-            /* for debug
-            while (!feof($fp)) {
-                echo fgets($fp, 128);
-            }
-            */
-            echo "Current time: " . time() . " [GET {$fputsPhpPath}?serverId={$gameServerId}]<br />\n";
-        }
-        fclose ($fp);
-        usleep(5 * 1000);
+    else {
+        $command = EXEC_PHP . " {$gameServerId}";
+        $fp = popen('start /B ' . $command, 'r');
+        pclose($fp);
     }
+
+    echo "Current time: " . time() . " [{$command}]<br />\n";
+    usleep(5 * 1000);
 }
 
