@@ -10,7 +10,31 @@ body {
 	margin: 0px;
 	padding: 0px;
 	color: #333;
-}form {
+}
+
+a {
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+a,
+a:hover {
+	color: #69C;
+	font-weight: bold;
+}
+
+.noResponse {
+	color: #999;
+}
+
+.noResponse a {
+	color: #999;
+}
+
+
+form {
 	margin: 0px;
 	padding: 0px;
 }
@@ -29,18 +53,6 @@ body {
 	overflow: hidden;
 	zoom: 1;
 	margin-bottom: 2em;
-}
-a {
-	text-decoration: none;
-}
-
-a:hover {
-	text-decoration: underline;
-}
-a,
-a:hover {
-	color: #69C;
-	font-weight: bold;
 }
 
 h1 {

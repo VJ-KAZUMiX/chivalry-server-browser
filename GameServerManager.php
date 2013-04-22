@@ -254,7 +254,7 @@ class GameServerManager {
         $updateTime = time();
         $gameServerRecord = null;
         $serverInfo = null;
-        $players = null;
+        //$players = null;
 
         // update if the record exists
         if ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -266,7 +266,7 @@ class GameServerManager {
                 $srcServer = new GoldSrcServer($ipAddress, $queryPort);
                 //$srcServer->initialize();
                 $serverInfo = $srcServer->getServerInfo();
-                $players = $srcServer->getPlayers();
+                //$players = $srcServer->getPlayers();
             } catch (Exception $e) {
                 $noResponse = true;
             }
@@ -290,7 +290,7 @@ class GameServerManager {
             $updateServerStatement->execute();
 
             // update players
-            $this->updatePlayers($gameServerRecord['game_server_id'], $players);
+            //$this->updatePlayers($gameServerRecord['game_server_id'], $players);
         } else {
             // update the servers did not respond
             $sql = "UPDATE `game_servers` SET `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
@@ -438,7 +438,48 @@ class GameServerManager {
         $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
         $statement->execute();
 
-        $gameServerRecord['players'] = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $playerRecords = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $updatePlayerInfoEnabled = false;
+
+        if (count($playerRecords) > 0 && $playerRecords[0]['player_update'] <= (time() - 60)) {
+            $updatePlayerInfoEnabled = true;
+        } else if (count($playerRecords) != $gameServerRecord['number_of_players']) {
+            $updatePlayerInfoEnabled = true;
+        }
+
+        $noResponse = false;
+        $players = null;
+
+        if ($updatePlayerInfoEnabled) {
+            try {
+                $ipAddress = $gameServerRecord['ip'];
+                $queryPort = $gameServerRecord['query_port'];
+                $srcServer = new GoldSrcServer($ipAddress, $queryPort);
+                //$srcServer->initialize();
+                //$serverInfo = $srcServer->getServerInfo();
+                $players = $srcServer->getPlayers();
+            } catch (Exception $e) {
+                $noResponse = true;
+            }
+        }
+
+        if ($updatePlayerInfoEnabled && !$noResponse) {
+            $this->updatePlayers($gameServerId, $players);
+            $statement->execute();
+            $playerRecords = $statement->fetchAll(PDO::FETCH_ASSOC);
+        }
+
+        if (count($playerRecords) != $gameServerRecord['number_of_players']) {
+            $numberOfPlayers = count($playerRecords);
+            $gameServerRecord['number_of_players'] = $numberOfPlayers;
+            $sql = "UPDATE `game_servers` SET `number_of_players` = :number_of_players WHERE `game_server_id` = :game_server_id";
+            $serverUpdateStatement = $connection->prepare($sql);
+            $serverUpdateStatement->bindParam(':number_of_players', $numberOfPlayers);
+            $serverUpdateStatement->bindParam(':game_server_id', $gameServerId);
+            $serverUpdateStatement->execute();
+        }
+
+        $gameServerRecord['players'] = $playerRecords;
 
         return $gameServerRecord;
     }

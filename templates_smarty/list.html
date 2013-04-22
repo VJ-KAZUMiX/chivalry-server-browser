@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>Chivalry Server Browser</title>
@@ -13,7 +14,7 @@
 {if $data->serverList !== null}
 <div class="section">
   <div class="heading">
-    <form id="form1" name="form1" method="get" action="">
+    <form id="form1" name="form1" method="get" action="./">
       <h2 class="contents">
         <label>Servers in
           <select name="country" id="country">
@@ -30,7 +31,7 @@
   </div>
   <div class="contents">
     <div class="contentBody">
-      <table class="serverList">
+      <table class="serverList" summary="server list">
         <tr>
           <th colspan="3" align="left" scope="col">Server Name</th>
           <th align="center" scope="col">Players</th>
@@ -41,14 +42,14 @@
         
         {foreach from=$data->serverList item=record name=serverlist}
         {if $record.server_name === null}{continue}{/if}
-        <tr>
+        <tr{if $record.no_response_counter > 0} class="noResponse"{/if}>
           <td align="right">{$smarty.foreach.serverlist.iteration}</td>
           <td>{$record.country}</td>
-          <td><a href="?serverId={$record.game_server_id}">{$record.server_name}</a></td>
+          <td><a href="./?serverId={$record.game_server_id}">{$record.server_name|escape:'html'}</a></td>
           <td align="center">{$record.number_of_players} / <span class="maxPlayers">{$record.max_players}</span></td>
           <td align="left" class="mapName">{$record.map_name}</td>
           <td align="left" class="ip">{$record.ip}:{$record.query_port}</td>
-          <td align="center"><a href="steam://run/219640/en/{$record.ip}:{$record.game_port}">JOIN</a></td>
+          <td align="center"><a href="steam://run/219640/en/{$record.ip}:{$record.game_port}" title="{$record.server_name|escape:'html'}">JOIN</a></td>
         </tr>
         {/foreach}
 
@@ -66,11 +67,11 @@
 {if $data->serverInfo !== null}
 <div class="section">
   <div class="heading">
-    <h2 class="contents">Players in {$data->serverInfo.server_name} (<a href="steam://run/219640/en/{$data->serverInfo.ip}:{$data->serverInfo.game_port}">JOIN</a>)</h2>
+    <h2 class="contents">Players in {$data->serverInfo.server_name|escape:'html'} (<a href="steam://run/219640/en/{$data->serverInfo.ip}:{$data->serverInfo.game_port}">JOIN</a>)</h2>
   </div>
   <div class="contents">
     <div class="contentBody">
-      <table class="playerList">
+      <table class="playerList" summary="player list">
         <tr>
           <th align="left" scope="col">Player Name</th>
           <th align="right" scope="col">Score</th>
@@ -79,7 +80,7 @@
         
         {foreach from=$data->serverInfo.players item=record}
         <tr>
-          <td>{$record.player_name}</td>
+          <td>{$record.player_name|escape:'html'}</td>
           <td align="right">{$record.player_score}</td>
           <td align="right">{$record.player_connection_time}</td>
         </tr>
