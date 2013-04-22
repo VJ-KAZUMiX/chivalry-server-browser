@@ -275,6 +275,7 @@ class GameServerManager {
         }
 
         if (!$noResponse) {
+            // the server responded
             $sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `game_dir` = :game_dir, `game_desc` = :game_desc, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
             $updateServerStatement = $connection->prepare($sql);
             $updateServerStatement->bindParam(':server_name', $serverInfo['serverName']);
@@ -292,7 +293,7 @@ class GameServerManager {
             // update players
             //$this->updatePlayers($gameServerRecord['game_server_id'], $players);
         } else {
-            // update the servers did not respond
+            // the servers did not respond, count up no_response_counter
             $sql = "UPDATE `game_servers` SET `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
             $updateServerStatement = $connection->prepare($sql);
             $noResponseCounter = $gameServerRecord['no_response_counter'] + 1;
@@ -420,6 +421,10 @@ class GameServerManager {
         $statement->execute();
     }
 
+    /**
+     * @param int $gameServerId
+     * @return bool|array
+     */
     public function getServerInfo($gameServerId) {
         $connection = $this->getSqlConnection();
         $sql = "SELECT * FROM `game_servers` WHERE `game_server_id` = :game_server_id";
@@ -446,6 +451,10 @@ class GameServerManager {
         } else if (count($playerRecords) != $gameServerRecord['number_of_players']) {
             $updatePlayerInfoEnabled = true;
         }
+
+        /*
+         * players
+         */
 
         $noResponse = false;
         $players = null;
