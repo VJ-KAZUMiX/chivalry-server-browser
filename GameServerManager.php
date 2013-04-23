@@ -244,7 +244,8 @@ class GameServerManager {
     public function updateTargetServerInfo($gameServerId) {
         // get current info from DB
         $connection = $this->getSqlConnection();
-        $sql = 'SELECT * FROM `game_servers` WHERE `game_server_id` = :game_server_id';
+        //$sql = 'SELECT * FROM `game_servers` WHERE `game_server_id` = :game_server_id';
+        $sql = 'SELECT `game_server_id`, `ip`, `query_port`, `no_response_counter` FROM `game_servers` WHERE `game_server_id` = :game_server_id';
         $statement = $connection->prepare($sql);
         $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
         $statement->execute();
@@ -276,13 +277,14 @@ class GameServerManager {
 
         if (!$noResponse) {
             // the server responded
-            $sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `game_dir` = :game_dir, `game_desc` = :game_desc, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            //$sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `game_dir` = :game_dir, `game_desc` = :game_desc, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            $sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
             $updateServerStatement = $connection->prepare($sql);
             $updateServerStatement->bindParam(':server_name', $serverInfo['serverName']);
             $updateServerStatement->bindParam(':game_port',  $serverInfo['serverPort']);
             $updateServerStatement->bindParam(':map_name',  $serverInfo['mapName']);
-            $updateServerStatement->bindParam(':game_dir',  $serverInfo['gameDir']);
-            $updateServerStatement->bindParam(':game_desc',  $serverInfo['gameDesc']);
+            //$updateServerStatement->bindParam(':game_dir',  $serverInfo['gameDir']);
+            //$updateServerStatement->bindParam(':game_desc',  $serverInfo['gameDesc']);
             $updateServerStatement->bindParam(':max_players',  $serverInfo['maxPlayers']);
             $updateServerStatement->bindParam(':number_of_players',  $serverInfo['numberOfPlayers']);
             $updateServerStatement->bindValue(':no_response_counter',  0);

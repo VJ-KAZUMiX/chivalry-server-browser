@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2013 年 4 月 24 日 00:13
+-- 生成日時: 2013 年 4 月 24 日 01:42
 -- サーバのバージョン: 5.5.27
 -- PHP のバージョン: 5.4.7
 
@@ -51,8 +51,6 @@ CREATE TABLE IF NOT EXISTS `game_servers` (
   `server_name` varchar(128) DEFAULT NULL,
   `game_port` int(10) unsigned DEFAULT NULL,
   `map_name` varchar(128) DEFAULT NULL,
-  `game_dir` varchar(128) DEFAULT NULL,
-  `game_desc` varchar(128) DEFAULT NULL,
   `max_players` int(11) DEFAULT NULL,
   `number_of_players` int(11) DEFAULT NULL,
   `no_response_counter` int(10) unsigned NOT NULL,
