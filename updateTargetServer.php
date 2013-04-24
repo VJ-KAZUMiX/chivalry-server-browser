@@ -22,7 +22,7 @@ if ($serverIdFromGet === 0) {
     }
 
 } else {
-    $gameServerIdArray = $serverIdFromGet;
+    $gameServerIdArray[] = $serverIdFromGet;
 }
 
 $gameServerManager = GameServerManager::sharedManager();

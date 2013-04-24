@@ -67,4 +67,28 @@ class Browser {
         $this->mySmarty->display('list.html');
     }
 
+    public function convertSecToHMS($time) {
+        $sec = $time % 60;
+        $time = floor($time / 60);
+        if ($time == 0) {
+            return $time . 's';
+        }
+
+        $result = $this->makeZerofillNumber($sec, 2) . 's';
+        $min = $time % 60;
+        $hour = floor($time / 60);
+        if ($hour == 0) {
+            $result = $min . 'm ' . $result;
+            return $result;
+        }
+
+        $result = $hour . 'h ' . $this->makeZerofillNumber($min, 2) . 'm ' . $result;
+        return $result;
+    }
+
+    private function makeZerofillNumber($number, $digit) {
+        $result = '00000000' . $number;
+        $result = substr($result, -$digit);
+        return $result;
+    }
 }

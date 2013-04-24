@@ -92,7 +92,7 @@
         <tr>
           <td>{$record.player_name|escape:'html'}</td>
           <td align="right">{$record.player_score}</td>
-          <td align="right">{$record.player_connection_time}</td>
+          <td align="right">{$data->convertSecToHMS($record.player_connection_time)}</td>
         </tr>
         {/foreach}
 
