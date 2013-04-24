@@ -11,15 +11,21 @@ ignore_user_abort(TRUE);
 require_once 'config.php';
 require_once 'GameServerManager.php';
 
-$gameServerId = isset($_GET['serverId']) ? intval($_GET['serverId']) : 0;
-if ($gameServerId === 0) {
-    $gameServerId = isset($argv[1]) ? intval($argv[1]) : 0;
-
-    if ($gameServerId === 0) {
-        echo 'exit';
-        exit();
+$gameServerIdArray = array();
+$serverIdFromGet = isset($_GET['serverId']) ? intval($_GET['serverId']) : 0;
+if ($serverIdFromGet === 0) {
+    for ($i=1; $i<$argc; $i++) {
+        $gameServerId = intval($argv[$i]);
+        if ($gameServerId) {
+            $gameServerIdArray[] = $gameServerId;
+        }
     }
+
+} else {
+    $gameServerIdArray = $serverIdFromGet;
 }
 
 $gameServerManager = GameServerManager::sharedManager();
-$gameServerManager->updateTargetServerInfo($gameServerId);
+foreach ($gameServerIdArray as $gameServerId) {
+    $gameServerManager->updateTargetServerInfo($gameServerId);
+}

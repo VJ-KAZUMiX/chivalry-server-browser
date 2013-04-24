@@ -28,21 +28,39 @@ if ($min % 15 === 0 || isset($_GET['force'])) {
     $serverList = $gameServerManager->getServerList(array('JP'));
 }
 
+$numberOfIdSet = ceil(count($serverList) / 20);
+$argSetArray = array();
+for ($i=0; $i<$numberOfIdSet; $i++) {
+    $argSetArray[] = array();
+}
+
+$counter = 0;
 foreach ($serverList as $serverRecord) {
     $gameServerId = $serverRecord['game_server_id'];
+    $argSetArray[$counter][] = $gameServerId;
+    $counter++;
+    $counter %= $numberOfIdSet;
+}
+
+foreach ($argSetArray as $argSet) {
+    if (!count($argSet)) {
+        break;
+    }
+
+    $arg = implode(' ', $argSet);
 
     if (PHP_OS !== 'WIN32' && PHP_OS !== 'WINNT') {
         // making exec path
-        $command = EXEC_PHP . " {$gameServerId} > /dev/null &";
+        $command = EXEC_PHP . " {$arg} > /dev/null &";
         exec($command);
     }
     else {
-        $command = EXEC_PHP . " {$gameServerId}";
+        $command = EXEC_PHP . " {$arg}";
         $fp = popen('start /B ' . $command, 'r');
         pclose($fp);
     }
 
     echo "Current time: " . time() . " [{$command}]<br />\n";
-    usleep(5 * 1000);
-}
+    usleep(20 * 1000);
 
+}
