@@ -12,17 +12,15 @@ require_once 'config.php';
 require_once 'GameServerManager.php';
 
 $gameServerIdArray = array();
-$serverIdFromGet = isset($_GET['serverId']) ? intval($_GET['serverId']) : 0;
-if ($serverIdFromGet === 0) {
+if (isset($_GET['serverIds'])) {
+    $gameServerIdArray = explode(',', $_GET['serverIds']);
+} else {
     for ($i=1; $i<$argc; $i++) {
         $gameServerId = intval($argv[$i]);
         if ($gameServerId) {
             $gameServerIdArray[] = $gameServerId;
         }
     }
-
-} else {
-    $gameServerIdArray[] = $serverIdFromGet;
 }
 
 $gameServerManager = GameServerManager::sharedManager();

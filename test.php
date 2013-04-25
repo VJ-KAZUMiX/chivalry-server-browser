@@ -7,10 +7,10 @@
  * To change this template use File | Settings | File Templates.
  */
 
-echo dirname(__DIR__);
+//echo dirname(__DIR__);
 //phpinfo();
 //var_dump($_SERVER);
-exit();
+//exit();
 //$parentDir = pathinfo($_SERVER['PHP_SELF']);
 //var_dump($parentDir);
 
@@ -62,6 +62,64 @@ class TestManager {
         }
 
     }
+
+    /*
+     * if the server runs php as module, the following process is better
+     */
+    public function testFsockopen() {
+        $gameServerManager = $this->gameServerManager;
+        $gameServerManager->updateWithMasterServer();
+        $serverList = $gameServerManager->getServerList();
+
+
+        $numberOfIdSet = ceil(count($serverList) / 20);
+        $argSetArray = array();
+        for ($i=0; $i<$numberOfIdSet; $i++) {
+            $argSetArray[] = array();
+        }
+
+        $counter = 0;
+        foreach ($serverList as $serverRecord) {
+            $gameServerId = $serverRecord['game_server_id'];
+            $argSetArray[$counter][] = $gameServerId;
+            $counter++;
+            $counter %= $numberOfIdSet;
+        }
+
+        define('HTTP_PATH', '/');
+        define('HTTP_HOST_NAME', 'steammonitor');
+        define('HTTP_SERVER_PORT', 80);
+        // making the php path for the fputs
+        $fputsPhpPath = HTTP_PATH . 'updateTargetServer.php';
+        $hostName = HTTP_HOST_NAME;
+        // update each server asyncronous
+
+        foreach ($argSetArray as $argSet) {
+            if (!count($argSet)) {
+                break;
+            }
+
+            $arg = implode(',', $argSet);
+
+            $fp = fsockopen ($hostName, HTTP_SERVER_PORT, $errNo, $errStr, 5);
+            if (!$fp) {
+                echo "Error: $errStr ($errNo)<br>\n";
+            } else {
+                socket_set_blocking($fp, false);
+                fputs ($fp, "GET {$fputsPhpPath}?serverIds={$arg} HTTP/1.0\r\nHost: {$hostName}\r\n\r\n");
+                //for debug
+                /*
+                while (!feof($fp)) {
+                    echo fgets($fp, 128);
+                }
+                */
+            }
+            fclose ($fp);
+            echo "Current time: " . time() . " [{$arg}]<br />\n";
+            usleep(100 * 1000);
+
+        }
+    }
 }
 
 $testManager = new TestManager();
@@ -70,6 +128,7 @@ $testManager = new TestManager();
 //$testManager->testUpdateIndividualServerInfo();
 //$testManager->testGetServerList();
 //$testManager->testUpdateSync();
+$testManager->testFsockopen();
 
 
 
