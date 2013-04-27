@@ -86,12 +86,10 @@ class TestManager {
             $counter %= $numberOfIdSet;
         }
 
-        define('HTTP_PATH', '/');
-        define('HTTP_HOST_NAME', 'steammonitor');
         define('HTTP_SERVER_PORT', 80);
         // making the php path for the fputs
         $fputsPhpPath = HTTP_PATH . 'updateTargetServer.php';
-        $hostName = HTTP_HOST_NAME;
+        $hostName = HTTP_HOST;
         // update each server asyncronous
 
         foreach ($argSetArray as $argSet) {

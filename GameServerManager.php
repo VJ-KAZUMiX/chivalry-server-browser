@@ -482,10 +482,11 @@ class GameServerManager {
             $numberOfPlayers = count($playerRecords);
             $gameServerRecord['number_of_players'] = $numberOfPlayers;
             $gameServerRecord['game_server_update'] = time();
-            $sql = "UPDATE `game_servers` SET `number_of_players` = :number_of_players, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            $sql = "UPDATE `game_servers` SET `number_of_players` = :number_of_players, `game_server_update` = :game_server_update, `no_response_counter` = :no_response_counter WHERE `game_server_id` = :game_server_id";
             $serverUpdateStatement = $connection->prepare($sql);
             $serverUpdateStatement->bindParam(':number_of_players', $gameServerRecord['number_of_players']);
             $serverUpdateStatement->bindParam(':game_server_update', $gameServerRecord['game_server_update']);
+            $serverUpdateStatement->bindValue(':no_response_counter', 0);
             $serverUpdateStatement->bindParam(':game_server_id', $gameServerId);
             $serverUpdateStatement->execute();
         }
