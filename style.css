@@ -99,6 +99,18 @@ td.ip {
 	font-size: 80%;
 }
 
+p.lastUpdate {
+	font-size: 90%;
+	color: #666;
+	float: right;
+	margin: 0px;
+	padding-top: 1.2em;
+	padding-right: 0px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+}
+
+
 
 
 #footer {

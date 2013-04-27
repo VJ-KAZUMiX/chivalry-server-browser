@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Chivalry Server Browser</title>
+<title>{$data->pageTitle|escape:'html'}</title>
 <link href="style.css" rel="stylesheet" type="text/css" />
 
 <meta property="fb:app_id" content="636086276408468" />
@@ -18,25 +18,48 @@
 </head>
 <body>
 <div id="header">
-  <h1 class="contents"><a href="./">Chivalry: Medieval Warfare Server Browser</a></h1>
+  <h1 class="contents"><a href="{$data->appRoot}">Chivalry: Medieval Warfare - Server Browser</a></h1>
 </div>
+
+{if count($data->errorList) > 0}
+<div class="section">
+  <div class="heading">
+    <div class="contents">
+      <h2>Error</h2>
+    </div>
+  </div>
+  <div class="contents">
+    <div class="contentBody">
+      <ul>
+      
+        {foreach from=$data->errorList item=message}
+        <li>{$message|escape:'html'}</li>
+        {/foreach}
+        
+      </ul>
+    </div>
+  </div>
+</div>
+{/if}
 
 {if $data->serverList !== null}
 <div class="section">
   <div class="heading">
-    <form id="form1" name="form1" method="get" action="./">
-      <h2 class="contents">
-        <label>Servers in
-          <select name="country" id="country">
+    <form id="form1" name="form1" method="get" action="{$data->appRoot}">
+      <div class="contents">
+        <h2>
+          <label>Servers in
+            <select name="country" id="country">
             
             {foreach from=$data->countryCodeAssoc key=key item=value}
             <option value="{$key}"{if $key == $data->targetCountryCode} selected="selected"{/if}>{$value}</option>
             {/foreach}
             
           </select>
-        </label>
-        <input type="submit" name="browseButton" id="browseButton" value="Browse" />
-      </h2>
+          </label>
+          <input type="submit" name="browseButton" id="browseButton" value="Browse" />
+        </h2>
+      </div>
     </form>
   </div>
   <div class="contents">
@@ -55,7 +78,7 @@
         <tr{if $record.no_response_counter > 0} class="noResponse"{/if}>
           <td align="right">{$smarty.foreach.serverlist.iteration}</td>
           <td>{$record.country}</td>
-          <td><a href="./?serverId={$record.game_server_id}">{$record.server_name|escape:'html'}</a></td>
+          <td><a href="{$data->appRoot}?serverId={$record.game_server_id}">{$record.server_name|escape:'html'}</a></td>
           <td align="center">{$record.number_of_players} / <span class="maxPlayers">{$record.max_players}</span></td>
           <td align="left" class="mapName">{$record.map_name}</td>
           <td align="left" class="ip">{$record.ip}:{$record.query_port}</td>
@@ -77,10 +100,14 @@
 {if $data->serverInfo !== null}
 <div class="section">
   <div class="heading">
-    <h2 class="contents">Players in {$data->serverInfo.server_name|escape:'html'} (<a href="steam://run/219640/en/{$data->serverInfo.ip}:{$data->serverInfo.game_port}">JOIN</a>)</h2>
+    <div class="contents">
+      <p class="lastUpdate">Last Update: {$data->serverInfo.last_update}</p>
+      <h2>{$data->serverInfo.server_name|escape:'html'} in <a href="{$data->appRoot}?country={$data->serverInfo.country}">{$data->serverInfo.country_name}</a></h2>
+    </div>
   </div>
   <div class="contents">
     <div class="contentBody">
+      <h3><a href="steam://run/219640/en/{$data->serverInfo.ip}:{$data->serverInfo.game_port}">JOIN</a>: {$data->serverInfo.map_name} <tt>({$data->serverInfo.number_of_players}/{$data->serverInfo.max_players})</tt></h3>
       <table class="playerList" summary="player list">
         <tr>
           <th align="left" scope="col">Player Name</th>
@@ -112,5 +139,19 @@
   <p>&copy; 2013 KAZUMiX (<a href="https://twitter.com/KAZUMiX" target="_blank">Twitter</a> / <a href="https://github.com/VJ-KAZUMiX" target="_blank">GitHub</a> / <a href="http://steamcommunity.com/id/KAZUMiX" target="_blank">Steam</a>)</p>
   <p>This product includes GeoLite data created by MaxMind, available from <a href="http://www.maxmind.com" target="_blank">http://www.maxmind.com</a>.</p>
 </div>
+
+{literal}
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-251684-4', 'refactor.jp');
+  ga('send', 'pageview');
+
+</script>
+{/literal}
+
 </body>
 </html>

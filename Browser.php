@@ -20,8 +20,11 @@ class Browser {
 
     private $mySmarty;
 
+    public $pageTitle = "Chivalry Server Browser";
+    public $appRoot;
     public $countryCodeAssoc;
 
+    public $errorList = array();
     public $targetCountryCode = null;
     public $serverList = null;
     public $serverInfo = null;
@@ -30,6 +33,7 @@ class Browser {
         $this->gameServerManager = GameServerManager::sharedManager();
         $this->mySmarty = new MySmarty();
         $this->countryCodeAssoc = get_country_assoc();
+        $this->appRoot = 'http://' . HTTP_HOST . HTTP_PATH;
 
         if (isset($_GET['serverId'])) {
             $this->viewServerInfo($_GET['serverId']);
@@ -43,6 +47,9 @@ class Browser {
     private function getTargetCountryCodeArray() {
         if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
             $this->targetCountryCode = $_GET['country'];
+
+            $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
+
             return array($_GET['country']);
         }
 
@@ -63,6 +70,18 @@ class Browser {
 
     private function viewServerInfo($serverId) {
         $this->serverInfo = $this->gameServerManager->getServerInfo($serverId);
+
+        if (!$this->serverInfo) {
+            $this->pageTitle = "Error - {$this->pageTitle}";
+            $this->errorList[] = 'The Information about the server is not available.';
+        } else {
+            $this->pageTitle = "{$this->serverInfo['server_name']} - {$this->pageTitle}";
+            $this->serverInfo['country_name'] = $this->countryCodeAssoc[$this->serverInfo['country']];
+
+            $lastUpdate = $this->convertSecToHMS(time() - $this->serverInfo['game_server_update']);
+            $this->serverInfo['last_update'] = "{$lastUpdate} ago";
+        }
+
         $this->mySmarty->assign('data', $this);
         $this->mySmarty->display('list.html');
     }
@@ -71,7 +90,7 @@ class Browser {
         $sec = $time % 60;
         $time = floor($time / 60);
         if ($time == 0) {
-            return $time . 's';
+            return $sec . 's';
         }
 
         $result = $this->makeZerofillNumber($sec, 2) . 's';

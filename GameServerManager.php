@@ -425,7 +425,7 @@ class GameServerManager {
 
     /**
      * @param int $gameServerId
-     * @return bool|array
+     * @return null|array
      */
     public function getServerInfo($gameServerId) {
         $connection = $this->getSqlConnection();
@@ -437,7 +437,7 @@ class GameServerManager {
         $gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC);
 
         if (!$gameServerRecord) {
-            return false;
+            return null;
         }
 
         $sql = "SELECT * FROM `game_players` WHERE `game_server_id` = :game_server_id ORDER BY `player_connection_time` DESC";
@@ -478,19 +478,27 @@ class GameServerManager {
             $this->updatePlayers($gameServerId, $players);
             $statement->execute();
             $playerRecords = $statement->fetchAll(PDO::FETCH_ASSOC);
-        }
 
-        if (count($playerRecords) != $gameServerRecord['number_of_players']) {
             $numberOfPlayers = count($playerRecords);
             $gameServerRecord['number_of_players'] = $numberOfPlayers;
-            $sql = "UPDATE `game_servers` SET `number_of_players` = :number_of_players WHERE `game_server_id` = :game_server_id";
+            $gameServerRecord['game_server_update'] = time();
+            $sql = "UPDATE `game_servers` SET `number_of_players` = :number_of_players, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
             $serverUpdateStatement = $connection->prepare($sql);
-            $serverUpdateStatement->bindParam(':number_of_players', $numberOfPlayers);
+            $serverUpdateStatement->bindParam(':number_of_players', $gameServerRecord['number_of_players']);
+            $serverUpdateStatement->bindParam(':game_server_update', $gameServerRecord['game_server_update']);
             $serverUpdateStatement->bindParam(':game_server_id', $gameServerId);
             $serverUpdateStatement->execute();
         }
-
         $gameServerRecord['players'] = $playerRecords;
+
+        //  Update for No Response
+        if ($noResponse && $gameServerRecord['no_response_counter'] == 0) {
+            $sql = "UPDATE `game_servers` SET `no_response_counter` = :no_response_counter WHERE `game_server_id` = :game_server_id";
+            $noResponseUpdateStatement = $connection->prepare($sql);
+            $noResponseUpdateStatement->bindValue(':no_response_counter', 1);
+            $noResponseUpdateStatement->bindParam(':game_server_id', $gameServerId);
+            $noResponseUpdateStatement->execute();
+        }
 
         return $gameServerRecord;
     }

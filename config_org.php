@@ -12,6 +12,9 @@ ob_start("ob_gzhandler");
 define('EXEC_PHP', '/usr/local/php/5.2.17/bin/php /home/kazumix/www/chivalry/updateTargetServer.php');
 //define('EXEC_PHP', 'C:\xampp\php\php-cgi.exe D:\KAZUMiX\docs\project\KAZUMiX\steammonitor\git\chivalry-server-browser\updateTargetServer.php');
 
+define('HTTP_HOST', 'steammonitor');
+define('HTTP_PATH', '/');
+
 define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'steam');
 define('DB_USER', 'steam');
