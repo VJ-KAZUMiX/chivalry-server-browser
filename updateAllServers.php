@@ -17,7 +17,7 @@ require_once 'GameServerManager.php';
 $gameServerManager = GameServerManager::sharedManager();
 $gameServerManager->deleteUnrespondedServers(5);
 
-// update all servers every 10 minutes
+// update all servers every 15 minutes
 // TODO: improve
 $sec = time();
 $min = floor($sec / 60);
@@ -26,6 +26,11 @@ if ($min % 15 === 0 || isset($_GET['force'])) {
     $serverList = $gameServerManager->getServerList();
 } else {
     $serverList = $gameServerManager->getServerList(array('JP'));
+}
+
+// insert statistics
+if ($min % 15 === 2 || isset($_GET['statistics'])) {
+    $gameServerManager->insertCountryPlayers();
 }
 
 $numberOfIdSet = ceil(count($serverList) / 20);

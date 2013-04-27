@@ -502,4 +502,21 @@ class GameServerManager {
 
         return $gameServerRecord;
     }
+
+    public function insertCountryPlayers() {
+        $connection = $this->getSqlConnection();
+        $sql = "SELECT `country`, SUM(`number_of_players`) AS players FROM `game_servers` GROUP BY `country`";
+        $statement = $connection->prepare($sql);
+        $statement->execute();
+
+        $time = time();
+        $sql = "INSERT INTO `country_players` (`country_players_id`, `country`, `total_players`, `country_players_update`) VALUES (NULL, :country, :total_players, :country_players_update);";
+        $countryPlayersInsertStatement = $connection->prepare($sql);
+        $countryPlayersInsertStatement->bindParam(':country_players_update', $time, PDO::PARAM_INT);
+        while ($record = $statement->fetch(PDO::FETCH_ASSOC)) {
+            $countryPlayersInsertStatement->bindParam(':country', $record['country'], PDO::PARAM_STR);
+            $countryPlayersInsertStatement->bindParam(':total_players', $record['players'], PDO::PARAM_INT);
+            $countryPlayersInsertStatement->execute();
+        }
+    }
 }

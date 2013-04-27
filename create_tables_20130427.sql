@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2013 年 4 月 24 日 01:42
+-- 生成日時: 2013 年 4 月 27 日 22:18
 -- サーバのバージョン: 5.5.27
 -- PHP のバージョン: 5.4.7
 
@@ -19,6 +19,21 @@ SET time_zone = "+00:00";
 --
 -- データベース: `steam`
 --
+
+-- --------------------------------------------------------
+
+--
+-- テーブルの構造 `country_players`
+--
+
+CREATE TABLE IF NOT EXISTS `country_players` (
+  `country_players_id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `country` char(2) NOT NULL,
+  `total_players` int(10) unsigned NOT NULL,
+  `country_players_update` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`country_players_id`),
+  KEY `country` (`country`,`country_players_update`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
