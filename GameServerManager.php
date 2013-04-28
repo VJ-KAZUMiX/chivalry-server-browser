@@ -504,6 +504,9 @@ class GameServerManager {
         return $gameServerRecord;
     }
 
+    /**
+     *  for statistics
+     */
     public function insertCountryPlayers() {
         $connection = $this->getSqlConnection();
         $sql = "SELECT `country`, SUM(`number_of_players`) AS players FROM `game_servers` GROUP BY `country`";
@@ -519,5 +522,13 @@ class GameServerManager {
             $countryPlayersInsertStatement->bindParam(':total_players', $record['players'], PDO::PARAM_INT);
             $countryPlayersInsertStatement->execute();
         }
+    }
+
+    public function getNumberOfActiveServersPerCountry() {
+        $connection = $this->getSqlConnection();
+        $sql = "SELECT `country`, count(*) AS number_of_servers FROM `game_servers` WHERE `server_name` IS NOT NULL GROUP BY `country` ORDER BY `country`";
+        $statement = $connection->prepare($sql);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 }

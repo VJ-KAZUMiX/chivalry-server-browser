@@ -126,7 +126,7 @@ $testManager = new TestManager();
 //$testManager->testUpdateIndividualServerInfo();
 //$testManager->testGetServerList();
 //$testManager->testUpdateSync();
-$testManager->testFsockopen();
+//$testManager->testFsockopen();
 
 
 

@@ -23,6 +23,7 @@ class Browser {
     public $pageTitle = "Chivalry Server Browser";
     public $appRoot;
     public $countryCodeAssoc;
+    public $numberOfActiveServersPerCountry;
 
     public $errorList = array();
     public $targetCountryCode = null;
@@ -45,21 +46,42 @@ class Browser {
     }
 
     private function getTargetCountryCodeArray() {
+        $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
+        if (!$countryCode) {
+            $countryCode = 'US';
+        }
+        $this->storeNumberOfActiveServersPerCountry($countryCode);
+
         if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
             $this->targetCountryCode = $_GET['country'];
 
             $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
 
             return array($_GET['country']);
+        } else {
+            $this->targetCountryCode = $countryCode;
+            return array($countryCode);
         }
 
-        $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
-        if (!$countryCode) {
-            $countryCode = 'US';
+    }
+
+    private function storeNumberOfActiveServersPerCountry($necessaryCountryCode) {
+        $list = $this->gameServerManager->getNumberOfActiveServersPerCountry();
+
+        $this->numberOfActiveServersPerCountry = array();
+        $necessaryFound = false;
+        foreach ($list as $record) {
+            $this->numberOfActiveServersPerCountry[] = array('country' => $record['country'], 'servers' => $record['number_of_servers']);
+            if ($record['country'] == $necessaryCountryCode) {
+                $necessaryFound = true;
+            }
         }
 
-        $this->targetCountryCode = $countryCode;
-        return array($countryCode);
+        if ($necessaryFound) {
+            return;
+        }
+
+        $this->numberOfActiveServersPerCountry[] = array('country' => $necessaryCountryCode, 'servers' => 0);
     }
 
     private function viewServerList($countryCodeArray) {

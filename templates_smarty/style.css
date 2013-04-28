@@ -98,6 +98,11 @@ td.mapName {
 td.ip {
 	font-size: 80%;
 }
+td.ping {
+	font-size: 90%;
+	font-family: "Courier New", Courier, monospace;
+}
+
 
 p.lastUpdate {
 	font-size: 90%;

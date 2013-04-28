@@ -51,8 +51,8 @@
           <label>Servers in
             <select name="country" id="country">
             
-            {foreach from=$data->countryCodeAssoc key=key item=value}
-            <option value="{$key}"{if $key == $data->targetCountryCode} selected="selected"{/if}>{$value}</option>
+            {foreach from=$data->numberOfActiveServersPerCountry item=record}
+            <option value="{$record.country}"{if $record.country == $data->targetCountryCode} selected="selected"{/if}>{$data->countryCodeAssoc[$record.country]} ({$record.servers})</option>
             {/foreach}
             
           </select>
