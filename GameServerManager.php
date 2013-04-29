@@ -531,4 +531,24 @@ class GameServerManager {
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getTotalNumberOfPlayersPerCountry($fromTime, $toTime) {
+        $connection = $this->getSqlConnection();
+        $sql = "SELECT `country`, SUM(`total_players`) as sum, count(*) as count FROM `country_players` WHERE `country_players_update` BETWEEN :fromTime AND :toTime GROUP BY `country` ORDER BY sum DESC";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':fromTime', $fromTime);
+        $statement->bindParam(':toTime', $toTime);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getAverageNumberOfPlayersPerCountry($fromTime, $toTime) {
+        $connection = $this->getSqlConnection();
+        $sql = "SELECT `country`, AVG(`total_players`) as avg, count(*) as count FROM `country_players` WHERE `country_players_update` BETWEEN :fromTime AND :toTime GROUP BY `country`";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':fromTime', $fromTime);
+        $statement->bindParam(':toTime', $toTime);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

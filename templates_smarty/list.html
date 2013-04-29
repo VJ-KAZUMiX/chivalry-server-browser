@@ -134,6 +134,46 @@
 </div>
 {/if}
 
+{if $data->statistics !== null}
+<div class="section">
+  <div class="heading">
+    <div class="contents">
+      <h2>Current Chivalry Players (most recent 24 hours)</h2>
+    </div>
+  </div>
+  <div class="contents">
+    <div class="contentBody">
+    
+      {if count($data->statistics)}
+      <table class="statistics" summary="statistics">
+        <tr class="hour">
+          
+          {foreach from=$data->statisticsHeader item=value name=header}
+          {if $smarty.foreach.header.first}<th scope="col">{$value}</th>
+          {else}{if $value}<th title="-{$value} hours ago" scope="col">-{$value}</th>{else}<th title="{$value} hours ago" scope="col">{$value}</th>{/if}{/if}{/foreach}
+
+        </tr>
+        
+        {foreach name=eachCountry from=$data->statistics key=country item=countryRecord}
+        <tr>
+          <th class="country" scope="row"><a href="{$data->appRoot}?country={$country}" title="{$data->countryCodeAssoc[$country]}">{$country}</a></th>
+          
+          {foreach name=players from=$countryRecord item=value}<td>{$value}</td>{/foreach}
+          
+        </tr>
+        {/foreach}
+        
+      </table>
+      
+      {else}
+      <p>No Data</p>
+      {/if}
+      
+    </div>
+  </div>
+</div>
+{/if}
+
 <div class="contents" id="footer">
   <iframe src="//www.facebook.com/plugins/like.php?href=http%3A%2F%2Frefactor.jp%2Fchivalry%2F&amp;send=false&amp;layout=standard&amp;width=450&amp;show_faces=false&amp;font&amp;colorscheme=light&amp;action=like&amp;height=35&amp;appId=636086276408468" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:920px; height:35px;" allowTransparency="true"></iframe>
   <p>&copy; 2013 KAZUMiX (<a href="https://twitter.com/KAZUMiX" target="_blank">Twitter</a> / <a href="https://github.com/VJ-KAZUMiX" target="_blank">GitHub</a> / <a href="http://steamcommunity.com/id/KAZUMiX" target="_blank">Steam</a>)</p>

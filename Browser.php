@@ -29,6 +29,8 @@ class Browser {
     public $targetCountryCode = null;
     public $serverList = null;
     public $serverInfo = null;
+    public $statistics = null;
+    public $statisticsHeader = null;
 
     public function __construct() {
         $this->gameServerManager = GameServerManager::sharedManager();
@@ -38,6 +40,8 @@ class Browser {
 
         if (isset($_GET['serverId'])) {
             $this->viewServerInfo($_GET['serverId']);
+        } elseif (isset($_GET['statistics'])) {
+            $this->viewStatistics();
         } else {
             $countryCodeArray = $this->getTargetCountryCodeArray();
             $this->viewServerList($countryCodeArray);
@@ -131,5 +135,67 @@ class Browser {
         $result = '00000000' . $number;
         $result = substr($result, -$digit);
         return $result;
+    }
+
+    private function makeStatistics() {
+        $baseTime = time();
+
+        $baseTotalNumOfPlayersList = $this->gameServerManager->getTotalNumberOfPlayersPerCountry($baseTime - 86399, $baseTime);
+        if (!count($baseTotalNumOfPlayersList)) {
+            return array();
+        }
+
+        $this->statisticsHeader = array();
+        $this->statisticsHeader[] = '';
+
+        $totalNumOfPlayersAssoc = array();
+        foreach ($baseTotalNumOfPlayersList as $record) {
+            $totalNumOfPlayersAssoc[$record['country']] = $record;
+        }
+
+        $outputTable = array();
+        $numOfColumns = 24;
+        foreach ($baseTotalNumOfPlayersList as $record) {
+            $columns = array();
+            for ($i = 0; $i < $numOfColumns; $i++) {
+                $columns[] = 0;
+            }
+            $country = $record['country'];
+            $outputTable[$country] = $columns;
+        }
+
+        $interval = 60 * 60;
+        for ($i = 0; $i < $numOfColumns; $i++) {
+            $this->statisticsHeader[] = $i;
+
+            $fromTime = $baseTime - $interval * ($i + 1) + 1;
+            $toTime = $baseTime - $interval * $i;
+            $avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
+
+            foreach ($avgNumOfPlayersList as $record) {
+                $country = $record['country'];
+                $avgNumOfPlayers = ceil($record['avg']);
+                $outputTable[$country][$i] = $avgNumOfPlayers;
+            }
+        }
+
+//        $numOfSamples = $baseTotalNumOfPlayersList[0]['count'];
+//        foreach ($baseTotalNumOfPlayersList as $record) {
+//            $country = $record['country'];
+//            $sum = $record['sum'];
+//            $avg = $sum / $numOfSamples;
+//            $outputTable[$country] = $avg;
+//        }
+
+        //var_dump($outputTable);
+
+        return $outputTable;
+    }
+
+    public function viewStatistics() {
+        $this->pageTitle = "Statistics - {$this->pageTitle}";
+        $this->statistics = $this->makeStatistics();
+        $this->mySmarty->assign('data', $this);
+        $this->mySmarty->display('list.html');
     }
 }
