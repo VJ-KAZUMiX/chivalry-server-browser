@@ -18,7 +18,10 @@
 </head>
 <body>
 <div id="header">
-  <h1 class="contents"><a href="{$data->appRoot}">Chivalry: Medieval Warfare - Server Browser</a></h1>
+  <div class="contents">
+    <h1><a href="{$data->appRoot}">Chivalry: Medieval Warfare - Server Browser</a></h1>
+    <p id="menu"><a href="{$data->appRoot}?statistics">Statistics</a></p>
+  </div>
 </div>
 
 {if count($data->errorList) > 0}
@@ -150,12 +153,12 @@
           
           {foreach from=$data->statisticsHeader item=value name=header}
           {if $smarty.foreach.header.first}<th scope="col">{$value}</th>
-          {else}{if $value}<th title="-{$value} hours ago" scope="col">-{$value}</th>{else}<th title="{$value} hours ago" scope="col">{$value}</th>{/if}{/if}{/foreach}
+          {else}{if $value}<th title="-{$value} hours ago" scope="col">-{$data->makeZerofillNumber($value,2)}</th>{else}<th title="{$value} hours ago" scope="col">Now</th>{/if}{/if}{/foreach}
 
         </tr>
         
         {foreach name=eachCountry from=$data->statistics key=country item=countryRecord}
-        <tr>
+        <tr class="{cycle values="odd,even"}">
           <th class="country" scope="row"><a href="{$data->appRoot}?country={$country}" title="{$data->countryCodeAssoc[$country]}">{$country}</a></th>
           
           {foreach name=players from=$countryRecord item=value}<td>{$value}</td>{/foreach}

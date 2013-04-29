@@ -59,6 +59,7 @@ h1 {
 	margin: 0px;
 	padding: 0px;
 	font-size: 120%;
+	float: left;
 }
 h1 a {
 	color: #333;
@@ -72,6 +73,12 @@ h2 {
 	padding-bottom: 1em;
 	padding-left: 0px;
 }
+#menu {
+	text-align: right;
+	margin: 0px;
+	padding: 0px;
+}
+
 
 
 
@@ -122,6 +129,14 @@ table.statistics tr.hour {
 table.statistics tr.hour th {
 	text-align: right;
 	font-family: "Courier New", Courier, monospace;
+}
+
+table.statistics tr.odd {
+	
+}
+
+table.statistics tr.even {
+	background-color: #F8F8F8;	
 }
 
 table.statistics th.country {

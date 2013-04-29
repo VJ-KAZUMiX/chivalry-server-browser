@@ -131,7 +131,7 @@ class Browser {
         return $result;
     }
 
-    private function makeZerofillNumber($number, $digit) {
+    public function makeZerofillNumber($number, $digit) {
         $result = '00000000' . $number;
         $result = substr($result, -$digit);
         return $result;
