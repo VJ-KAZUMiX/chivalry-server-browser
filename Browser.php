@@ -179,12 +179,12 @@ class Browser {
 
             $fromTime = $baseTime - $interval * ($i + 1) + 1;
             $toTime = $baseTime - $interval * $i;
-            //$avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
-            $maxNumOfPlayersList = $this->gameServerManager->getMaximumNumberOfPlayersPerCountry($fromTime, $toTime);
+            $avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
+            //$maxNumOfPlayersList = $this->gameServerManager->getMaximumNumberOfPlayersPerCountry($fromTime, $toTime);
 
-            foreach ($maxNumOfPlayersList as $record) {
+            foreach ($avgNumOfPlayersList as $record) {
                 $country = $record['country'];
-                $numOfPlayers = ceil($record['max']);
+                $numOfPlayers = ceil($record['avg']);
                 $outputTable[$country][$i] = $numOfPlayers;
             }
         }
