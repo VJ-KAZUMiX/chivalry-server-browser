@@ -50,23 +50,26 @@ class Browser {
     }
 
     private function getTargetCountryCodeArray() {
-        $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
-        if (!$countryCode) {
-            $countryCode = 'US';
-        }
-        $this->storeNumberOfActiveServersPerCountry($countryCode);
+        $result = null;
 
         if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
             $this->targetCountryCode = $_GET['country'];
 
             $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
 
-            return array($_GET['country']);
+            $result = $_GET['country'];
         } else {
+            $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
+            if (!$countryCode) {
+                $countryCode = 'JP';
+            }
             $this->targetCountryCode = $countryCode;
-            return array($countryCode);
+            $result = $countryCode;
         }
 
+        $this->storeNumberOfActiveServersPerCountry($result);
+
+        return array($result);
     }
 
     private function storeNumberOfActiveServersPerCountry($necessaryCountryCode) {
@@ -139,6 +142,12 @@ class Browser {
 
     private function makeStatistics() {
         $baseTime = time();
+        $baseHour = $baseTime - $baseTime % 3600;
+        if ($baseTime - $baseHour >= 60 * 20) {
+            $baseTime = $baseHour + 3600;
+        } else {
+            $baseTime = $baseHour;
+        }
 
         $baseTotalNumOfPlayersList = $this->gameServerManager->getTotalNumberOfPlayersPerCountry($baseTime - 86399, $baseTime);
         if (!count($baseTotalNumOfPlayersList)) {
@@ -170,12 +179,13 @@ class Browser {
 
             $fromTime = $baseTime - $interval * ($i + 1) + 1;
             $toTime = $baseTime - $interval * $i;
-            $avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
+            //$avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
+            $maxNumOfPlayersList = $this->gameServerManager->getMaximumNumberOfPlayersPerCountry($fromTime, $toTime);
 
-            foreach ($avgNumOfPlayersList as $record) {
+            foreach ($maxNumOfPlayersList as $record) {
                 $country = $record['country'];
-                $avgNumOfPlayers = ceil($record['avg']);
-                $outputTable[$country][$i] = $avgNumOfPlayers;
+                $numOfPlayers = ceil($record['max']);
+                $outputTable[$country][$i] = $numOfPlayers;
             }
         }
 
