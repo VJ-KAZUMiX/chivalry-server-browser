@@ -153,7 +153,7 @@
           
           {foreach from=$data->statisticsHeader item=value name=header}
           {if $smarty.foreach.header.first}<th scope="col">{$value}</th>
-          {else}{if $value}<th title="-{$value} hours ago" scope="col">-{$data->makeZerofillNumber($value,2)}</th>{else}<th title="{$value} hours ago" scope="col">Now</th>{/if}{/if}{/foreach}
+          {else}{if $value}<th title="{$value} hours ago" scope="col">-{$data->makeZerofillNumber($value,2)}</th>{else}<th title="{$value} hours ago" scope="col">Now</th>{/if}{/if}{/foreach}
 
         </tr>
         
