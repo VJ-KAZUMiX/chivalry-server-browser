@@ -130,6 +130,77 @@ class GameServerManager {
     }
 
     /**
+     * Add servers
+     * If the server already exists, reset no_response_counter to 0.
+     * @param array $gameServerList
+     */
+    public function addGameServers($gameServerList) {
+        $connection = $this->getSqlConnection();
+
+        $existServerIdList = array();
+
+        // prepare for checking already registered
+        $sql = 'SELECT * FROM  `game_servers` WHERE  `ip` = :ip AND  `query_port` = :query_port';
+        $selectStatement = $connection->prepare($sql);
+
+        // prepare for inserting a new record
+        $sql = 'INSERT INTO `game_servers` (`ip`, `country`, `query_port`, `no_response_counter`, `game_server_update`) VALUES (:ip, :country, :query_port, 0, :game_server_update)';
+        $insertStatement = $connection->prepare($sql);
+
+        foreach ($gameServerList as $record) {
+            $ipAddress = $record['ipAddress'];
+            $portNo = $record['portNo'];
+
+            // check already registered
+            $selectStatement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
+            $selectStatement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
+            $selectStatement->execute();
+            $result = $selectStatement->fetch(PDO::FETCH_ASSOC);
+
+            // reset no_response_counter to 0 if the record exist
+            if ($result) {
+                $gameServerId = $result['game_server_id'];
+                $existServerIdList[] = $gameServerId;
+                continue;
+            }
+
+            // insert a new record
+            $country = geoip_country_code_by_addr(self::getGeoIp(), $ipAddress);
+            if (!$country) {
+                // unknown or invalid region
+                $country = 'ZZ';
+            }
+            $insertStatement->bindParam(':ip', $ipAddress, PDO::PARAM_STR);
+            $insertStatement->bindParam(':country', $country, PDO::PARAM_STR);
+            $insertStatement->bindParam(':query_port', $portNo, PDO::PARAM_INT);
+            $insertStatement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
+            $insertStatement->execute();
+        }
+
+        if (!count($existServerIdList)) {
+            return;
+        }
+
+        // reset no_response_counter to 0 if the record exist
+
+        $placeNameList = array();
+        for ($i = 0, $len = count($existServerIdList); $i < $len; $i++) {
+            $placeNameList[] = ":game_server_id_{$i}";
+        }
+        $placeName = implode(',', $placeNameList);
+
+        $sql = "UPDATE `game_servers` SET `no_response_counter` = 0, `game_server_update` = :game_server_update WHERE `game_server_id` IN({$placeName});";
+        $updateStatement = $connection->prepare($sql);
+        $counter = 0;
+        foreach ($existServerIdList as $gameServerId) {
+            $updateStatement->bindParam(":game_server_id_{$counter}", $gameServerId, PDO::PARAM_INT);
+            $counter++;
+        }
+        $updateStatement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
+        $updateStatement->execute();
+    }
+
+    /**
      * @var MasterServer
      */
     private static $masterServerConnector;
@@ -152,11 +223,16 @@ class GameServerManager {
         $masterServerConnector = self::getMasterServerConnector();
         $serverList = $masterServerConnector->getServers(MasterServer::REGION_ALL, "\\type\\d\\gamedir\\chivalrymedievalwarfare");
 
+        $listForUpdate = array();
+
         foreach($serverList as $server) {
             $ipAddress = $server[0];
             $portNo = $server[1];
-            $this->addGameServer($ipAddress, $portNo);
+            //$this->addGameServer($ipAddress, $portNo);
+            $listForUpdate[] = array('ipAddress' => $ipAddress, 'portNo' => $portNo);
         }
+        $this->addGameServers($listForUpdate);
+
         return count($serverList);
     }
 
@@ -181,7 +257,7 @@ class GameServerManager {
         while ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
             $ipAddress = $gameServerRecord['ip'];
             $queryPort = $gameServerRecord['query_port'];
-            $country = $gameServerRecord['country'];
+            //$country = $gameServerRecord['country'];
 
             $players = null;
             $serverInfo = null;
