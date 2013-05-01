@@ -143,7 +143,7 @@ class Browser {
     private function makeStatistics() {
         $baseTime = time();
         $baseHour = $baseTime - $baseTime % 3600;
-        if ($baseTime - $baseHour >= 60 * 20) {
+        if ($baseTime - $baseHour >= 60 * 5) {
             $baseTime = $baseHour + 3600;
         } else {
             $baseTime = $baseHour;
