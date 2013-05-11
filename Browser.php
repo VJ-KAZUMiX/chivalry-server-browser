@@ -143,7 +143,7 @@ class Browser {
     private function makeStatistics() {
         $baseTime = time();
         $baseHour = $baseTime - $baseTime % 3600;
-        if ($baseTime - $baseHour >= 60 * 5) {
+        if ($baseTime - $baseHour >= 60 * 2) {
             $baseTime = $baseHour + 3600;
         } else {
             $baseTime = $baseHour;
@@ -179,12 +179,16 @@ class Browser {
 
             $fromTime = $baseTime - $interval * ($i + 1) + 1;
             $toTime = $baseTime - $interval * $i;
-            $avgNumOfPlayersList = $this->gameServerManager->getAverageNumberOfPlayersPerCountry($fromTime, $toTime);
-            //$maxNumOfPlayersList = $this->gameServerManager->getMaximumNumberOfPlayersPerCountry($fromTime, $toTime);
+            $numOfPlayersList = $this->gameServerManager->getNumberOfPlayersPerCountry($fromTime, $toTime);
 
-            foreach ($avgNumOfPlayersList as $record) {
+            foreach ($numOfPlayersList as $record) {
                 $country = $record['country'];
-                $numOfPlayers = ceil($record['avg']);
+                if ($i === 0) {
+                    $numOfPlayers = ceil($record['avg']);
+                } else {
+                    $numOfPlayers = ceil($record['max']);
+                }
+
                 $outputTable[$country][$i] = $numOfPlayers;
             }
         }
