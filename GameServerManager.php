@@ -331,7 +331,7 @@ class GameServerManager {
         $updateTime = time();
         $gameServerRecord = null;
         $serverInfo = null;
-        //$players = null;
+        $players = null;
 
         // update if the record exists
         if ($gameServerRecord = $statement->fetch(PDO::FETCH_ASSOC)) {
@@ -343,7 +343,7 @@ class GameServerManager {
                 $srcServer = new GoldSrcServer($ipAddress, $queryPort);
                 //$srcServer->initialize();
                 $serverInfo = $srcServer->getServerInfo();
-                //$players = $srcServer->getPlayers();
+                $players = $srcServer->getPlayers();
             } catch (Exception $e) {
                 $noResponse = true;
             }
@@ -362,7 +362,8 @@ class GameServerManager {
             //$updateServerStatement->bindParam(':game_dir',  $serverInfo['gameDir']);
             //$updateServerStatement->bindParam(':game_desc',  $serverInfo['gameDesc']);
             $updateServerStatement->bindParam(':max_players',  $serverInfo['maxPlayers']);
-            $updateServerStatement->bindParam(':number_of_players',  $serverInfo['numberOfPlayers']);
+            //$updateServerStatement->bindParam(':number_of_players',  $serverInfo['numberOfPlayers']);
+            $updateServerStatement->bindValue(':number_of_players',  count($players));
             $updateServerStatement->bindValue(':no_response_counter',  0);
             $updateServerStatement->bindParam(':game_server_update',  $updateTime);
             $updateServerStatement->bindParam(':game_server_id', $gameServerRecord['game_server_id']);
