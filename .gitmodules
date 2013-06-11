@@ -7,3 +7,6 @@
 [submodule "world-flags-sprite"]
 	path = world-flags-sprite
 	url = git@github.com:lafeber/world-flags-sprite.git
+[submodule "GeoIP/geoip-api-php"]
+	path = GeoIP/geoip-api-php
+	url = git@github.com:maxmind/geoip-api-php.git
