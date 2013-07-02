@@ -101,6 +101,7 @@ class Browser {
         $this->serverInfo = $this->gameServerManager->getServerInfo($serverId);
 
         if (!$this->serverInfo) {
+            header("HTTP/1.0 404 Not Found");
             $this->pageTitle = "Error - {$this->pageTitle}";
             $this->errorList[] = 'The Information about the server is not available.';
         } else {
