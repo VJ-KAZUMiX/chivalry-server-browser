@@ -631,10 +631,10 @@ class GameServerManager {
 
     public function getNumberOfPlayersPerCountry($fromTime, $toTime) {
         $connection = $this->getSqlConnection();
-        $sql = "SELECT `country`, MAX(`total_players`) as max, AVG(`total_players`) as avg, count(*) as count FROM `country_players` WHERE `country_players_update` BETWEEN :fromTime AND :toTime GROUP BY `country`";
+        $sql = "SELECT `country`, MAX(`total_players`) as max, AVG(`total_players`) as avg, count(`country_players_id`) as count FROM `country_players` WHERE `country_players_update` BETWEEN :fromTime AND :toTime GROUP BY `country`";
         $statement = $connection->prepare($sql);
-        $statement->bindParam(':fromTime', $fromTime);
-        $statement->bindParam(':toTime', $toTime);
+        $statement->bindParam(':fromTime', $fromTime, PDO::PARAM_INT);
+        $statement->bindParam(':toTime', $toTime, PDO::PARAM_INT);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }

@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.5.2.2
+-- version 3.3.9
 -- http://www.phpmyadmin.net
 --
--- ホスト: 127.0.0.1
--- 生成日時: 2013 年 4 月 27 日 22:18
--- サーバのバージョン: 5.5.27
--- PHP のバージョン: 5.4.7
+-- ホスト: localhost
+-- 生成時間: 2013 年 7 月 03 日 14:22
+-- サーバのバージョン: 5.5.8
+-- PHP のバージョン: 5.3.5
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -32,7 +31,8 @@ CREATE TABLE IF NOT EXISTS `country_players` (
   `total_players` int(10) unsigned NOT NULL,
   `country_players_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`country_players_id`),
-  KEY `country` (`country`,`country_players_update`)
+  KEY `country` (`country`),
+  KEY `country_players_update` (`country_players_update`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `game_players` (
   `player_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`game_player_id`),
   KEY `game_server_id` (`game_server_id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -71,9 +71,8 @@ CREATE TABLE IF NOT EXISTS `game_servers` (
   `no_response_counter` int(10) unsigned NOT NULL,
   `game_server_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`game_server_id`),
-  UNIQUE KEY `ip_and_port` (`ip`,`query_port`),
-  KEY `country` (`country`)
-) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
+  UNIQUE KEY `ip_and_port` (`ip`,`query_port`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- ダンプしたテーブルの制約
@@ -84,7 +83,3 @@ CREATE TABLE IF NOT EXISTS `game_servers` (
 --
 ALTER TABLE `game_players`
   ADD CONSTRAINT `game_players_ibfk_1` FOREIGN KEY (`game_server_id`) REFERENCES `game_servers` (`game_server_id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
