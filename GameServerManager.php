@@ -599,7 +599,7 @@ class GameServerManager {
      */
     public function insertCountryPlayers() {
         $connection = $this->getSqlConnection();
-        $sql = "SELECT `country`, SUM(`number_of_players`) AS players FROM `game_servers` GROUP BY `country`";
+        $sql = "SELECT `country`, SUM(`number_of_players`) AS players FROM `game_servers` WHERE `no_response_counter` <= 1 GROUP BY `country`";
         $statement = $connection->prepare($sql);
         $statement->execute();
 
@@ -615,9 +615,11 @@ class GameServerManager {
     }
 
     public function getNumberOfActiveServersPerCountry() {
+        $unreponseThredhold = UNRESPONSE_THRESHOLD;
         $connection = $this->getSqlConnection();
-        $sql = "SELECT `country`, count(*) AS number_of_servers FROM `game_servers` WHERE `server_name` IS NOT NULL GROUP BY `country` ORDER BY `country`";
+        $sql = "SELECT `country`, count(`game_server_id`) AS number_of_servers FROM `game_servers` WHERE `server_name` IS NOT NULL AND `no_response_counter` <= :no_response_counter GROUP BY `country` ORDER BY `country`";
         $statement = $connection->prepare($sql);
+        $statement->bindParam(':no_response_counter', $unreponseThredhold, PDO::PARAM_INT);
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
