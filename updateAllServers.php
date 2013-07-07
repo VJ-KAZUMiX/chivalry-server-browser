@@ -15,13 +15,15 @@ require_once 'config.php';
 require_once 'GameServerManager.php';
 
 $gameServerManager = GameServerManager::sharedManager();
-$gameServerManager->deleteUnrespondedServers(5);
+//$gameServerManager->deleteUnrespondedServers(5);
 
 // update all servers every 12 minutes
 // TODO: improve
 $sec = time();
 $min = floor($sec / 60);
 if ($min % 12 === 0 || isset($_GET['force'])) {
+    // Delete servers unresponded for 2 dayes
+    $gameServerManager->deleteUnrespondedServersWithTime( 60 * 60 * 24 * 2 );
     $gameServerManager->updateWithMasterServer();
     $serverList = $gameServerManager->getServerList();
 } else {

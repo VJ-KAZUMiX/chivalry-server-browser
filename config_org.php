@@ -7,6 +7,8 @@ mb_internal_encoding("utf-8");
 //date_default_timezone_set('Asia/Tokyo');
 ob_start("ob_gzhandler");
 
+define('UNRESPONSE_THRESHOLD', 5);
+
 // the command for exec() to update each server
 // register_argc_argv in php.ini must be enabled
 define('EXEC_PHP', '/usr/local/php/5.2.17/bin/php /home/kazumix/www/chivalry/updateTargetServer.php');

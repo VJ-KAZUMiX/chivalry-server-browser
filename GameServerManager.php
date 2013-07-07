@@ -448,12 +448,13 @@ class GameServerManager {
      */
     private function getPDOStatementForServerList($countryCodeList = null) {
         $connection = $this->getSqlConnection();
+        $unreponseThredhold = UNRESPONSE_THRESHOLD;
 
         // all if no arg
         if (!$countryCodeList || count($countryCodeList) === 0) {
-            //$sql = 'SELECT * FROM `game_servers` WHERE `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC';
-            $sql = 'SELECT * FROM `game_servers` ORDER BY `number_of_players` DESC, `server_name` ASC';
+            $sql = 'SELECT * FROM `game_servers` WHERE `no_response_counter` <= :no_response_counter ORDER BY `number_of_players` DESC, `server_name` ASC';
             $statement = $connection->prepare($sql);
+            $statement->bindParam(':no_response_counter', $unreponseThredhold, PDO::PARAM_INT);
             return $statement;
         }
 
@@ -465,9 +466,9 @@ class GameServerManager {
             $placeNameList[$i] = $placeName;
         }
         $joinedPlaceName = implode(',', $placeNameList);
-        //$sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) AND `server_name` IS NOT NULL ORDER BY `number_of_players` DESC, `server_name` ASC";
-        $sql = "SELECT * FROM `game_servers` WHERE `country` IN ($joinedPlaceName) ORDER BY `number_of_players` DESC, `server_name` ASC";
+        $sql = "SELECT * FROM `game_servers` WHERE `no_response_counter` <= :no_response_counter AND `country` IN ($joinedPlaceName) ORDER BY `number_of_players` DESC, `server_name` ASC";
         $statement = $connection->prepare($sql);
+        $statement->bindParam(':no_response_counter', $unreponseThredhold, PDO::PARAM_INT);
 
         for ($i = 0, $len = count($countryCodeList); $i < $len; $i++) {
             $countryCode = $countryCodeList[$i];
@@ -496,7 +497,19 @@ class GameServerManager {
         $connection = $this->getSqlConnection();
         $sql = "DELETE FROM `game_servers` WHERE `no_response_counter` >= :no_response_counter";
         $statement = $connection->prepare($sql);
-        $statement->bindParam(':no_response_counter', $noResponseCounter);
+        $statement->bindParam(':no_response_counter', $noResponseCounter, PDO::PARAM_INT);
+        $statement->execute();
+    }
+
+    /**
+     * @param int seconds
+     */
+    public function deleteUnrespondedServersWithTime($unresponseTimeSec) {
+        $targetUpdateTime = time() - $unresponseTimeSec;
+        $connection = $this->getSqlConnection();
+        $sql = "DELETE FROM `game_servers` WHERE `game_server_update` <= :game_server_update";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_update', $targetUpdateTime, PDO::PARAM_INT);
         $statement->execute();
     }
 
