@@ -442,6 +442,14 @@ class GameServerManager {
         }
     }
 
+    private function deletePlayersWithServerId($gameServerId) {
+        $connection = $this->getSqlConnection();
+        $sql = "DELETE FROM `game_players` WHERE `game_server_id` = :game_server_id";
+        $statement = $connection->prepare($sql);
+        $statement->bindParam(':game_server_id', $gameServerId, PDO::PARAM_INT);
+        $statement->execute();
+    }
+
     /**
      * @param array $countryCodeList
      * @return PDOStatement
@@ -589,6 +597,12 @@ class GameServerManager {
             $noResponseUpdateStatement->bindValue(':no_response_counter', 1);
             $noResponseUpdateStatement->bindParam(':game_server_id', $gameServerId);
             $noResponseUpdateStatement->execute();
+        }
+
+        // delete old player records
+        if ($noResponse && count($playerRecords) > 0 && $playerRecords[0]['player_update'] < $gameServerRecord['game_server_update']) {
+            $this->deletePlayersWithServerId($gameServerId);
+            $gameServerRecord['players'] = array();
         }
 
         return $gameServerRecord;
