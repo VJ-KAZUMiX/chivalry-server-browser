@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 3.3.9
+-- version 3.3.10.5
 -- http://www.phpmyadmin.net
 --
--- ホスト: localhost
--- 生成時間: 2013 年 7 月 03 日 14:22
--- サーバのバージョン: 5.5.8
--- PHP のバージョン: 5.3.5
+-- ホスト: mysql458.db.sakura.ne.jp
+-- 生成時間: 2013 年 7 月 08 日 15:59
+-- サーバのバージョン: 5.5.28
+-- PHP のバージョン: 5.4.7
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 
@@ -16,7 +16,7 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 --
--- データベース: `steam`
+-- データベース: `kazumix_steam`
 --
 
 -- --------------------------------------------------------
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS `game_players` (
   `player_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`game_player_id`),
   KEY `game_server_id` (`game_server_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -71,8 +71,10 @@ CREATE TABLE IF NOT EXISTS `game_servers` (
   `no_response_counter` int(10) unsigned NOT NULL,
   `game_server_update` int(10) unsigned NOT NULL,
   PRIMARY KEY (`game_server_id`),
-  UNIQUE KEY `ip_and_port` (`ip`,`query_port`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  UNIQUE KEY `ip_and_port` (`ip`,`query_port`),
+  KEY `country` (`country`),
+  KEY `no_response_counter` (`no_response_counter`)
+) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 --
 -- ダンプしたテーブルの制約

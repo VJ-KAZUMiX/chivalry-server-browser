@@ -189,15 +189,17 @@ class GameServerManager {
         }
         $placeName = implode(',', $placeNameList);
 
-        $sql = "UPDATE `game_servers` SET `no_response_counter` = 0, `game_server_update` = :game_server_update WHERE `game_server_id` IN({$placeName});";
+        $sql = "UPDATE `game_servers` SET `no_response_counter` = 0, `game_server_update` = :game_server_update WHERE `game_server_id` IN({$placeName})";
         $updateStatement = $connection->prepare($sql);
+        $updateStatement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
         $counter = 0;
         foreach ($existServerIdList as $gameServerId) {
-            $updateStatement->bindParam(":game_server_id_{$counter}", $gameServerId, PDO::PARAM_INT);
+            $updateStatement->bindValue(":game_server_id_{$counter}", $gameServerId, PDO::PARAM_INT);
             $counter++;
         }
-        $updateStatement->bindValue(':game_server_update', time(), PDO::PARAM_INT);
         $updateStatement->execute();
+        //$rowCount = $updateStatement->rowCount();
+        //var_dump($rowCount);
     }
 
     /**
