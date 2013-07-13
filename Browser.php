@@ -32,6 +32,8 @@ class Browser {
     public $statistics = null;
     public $statisticsHeader = null;
 
+    public $multiCountries = null;
+
     public function __construct() {
         $this->gameServerManager = GameServerManager::sharedManager();
         $this->mySmarty = new MySmarty();
@@ -52,24 +54,62 @@ class Browser {
     private function getTargetCountryCodeArray() {
         $result = null;
 
-        if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
-            $this->targetCountryCode = $_GET['country'];
-
-            $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
-
-            $result = $_GET['country'];
-        } else {
-            $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
-            if (!$countryCode) {
-                $countryCode = 'JP';
-            }
-            $this->targetCountryCode = $countryCode;
-            $result = $countryCode;
+        $splitCountryCodeList = false;
+        if (isset($_GET['country'])) {
+            $splitCountryCodeList = explode(',', $_GET['country']);
         }
 
-        $this->storeNumberOfActiveServersPerCountry($result);
+        $validateCountryCodeList = array();
+        if ($splitCountryCodeList) {
+            foreach ($splitCountryCodeList as $code) {
+                if (isset($this->countryCodeAssoc[$code])) {
+                    $validateCountryCodeList[] = $code;
+                }
+            }
+        }
 
-        return array($result);
+        switch (count($validateCountryCodeList)) {
+            case 1:
+                $this->targetCountryCode = $validateCountryCodeList[0];
+                $this->pageTitle = "{$this->countryCodeAssoc[$validateCountryCodeList[0]]} - {$this->pageTitle}";
+                $result =$validateCountryCodeList;
+                $this->storeNumberOfActiveServersPerCountry($validateCountryCodeList[0]);
+                break;
+
+            case 0:
+                $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
+                if (!$countryCode) {
+                    $countryCode = 'JP';
+                }
+                $this->targetCountryCode = $countryCode;
+                $result = array($countryCode);
+                $this->storeNumberOfActiveServersPerCountry($countryCode);
+                break;
+
+            default:
+                $this->multiCountries = $validateCountryCodeList;
+                $this->pageTitle = implode(', ', $validateCountryCodeList) . " - {$this->pageTitle}";
+                $result = $validateCountryCodeList;
+                break;
+        }
+
+//        if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
+//            // only 1 country is set
+//            $this->targetCountryCode = $_GET['country'];
+//
+//            $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
+//
+//            $result = $_GET['country'];
+//        } else {
+//            $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
+//            if (!$countryCode) {
+//                $countryCode = 'JP';
+//            }
+//            $this->targetCountryCode = $countryCode;
+//            $result = $countryCode;
+//        }
+
+        return $result;
     }
 
     private function storeNumberOfActiveServersPerCountry($necessaryCountryCode) {

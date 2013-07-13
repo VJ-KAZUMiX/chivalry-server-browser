@@ -48,6 +48,16 @@
 {if $data->serverList !== null}
 <div class="section">
   <div class="heading">
+  
+    {if $data->multiCountries}
+    <div class="contents">
+      <h2>Servers in
+        {foreach from=$data->multiCountries item=country name=countries}<a href="{$data->appRoot}?country={$country}" title="{$data->countryCodeAssoc[$country]}">{$country}</a>{if !$smarty.foreach.countries.last}, {/if}{/foreach}
+      </h2>
+    </div>
+    
+    {else}
+    
     <form id="form1" name="form1" method="get" action="{$data->appRoot}">
       <div class="contents">
         <h2>
@@ -64,6 +74,8 @@
         </h2>
       </div>
     </form>
+    {/if}
+    
   </div>
   <div class="contents">
     <div class="contentBody">
