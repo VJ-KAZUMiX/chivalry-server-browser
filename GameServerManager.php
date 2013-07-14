@@ -683,4 +683,14 @@ class GameServerManager {
         $statement->execute();
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function makeCountryAssoc() {
+        $result = array();
+        $gi = $this->getGeoIp();
+        foreach($gi->GEOIP_COUNTRY_CODE_TO_NUMBER as $countryCode => $number) {
+            $result[$countryCode] = $gi->GEOIP_COUNTRY_NAMES[$number];
+        }
+        $result['ZZ'] = 'Unknown or Invalid Region';
+        return $result;
+    }
 }

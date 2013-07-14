@@ -21,7 +21,3 @@ define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'steam');
 define('DB_USER', 'steam');
 define('DB_PASS', 'steam');
-
-function get_country_assoc() {
-    return require 'country-list/country/cldr/en/country.php';
-}

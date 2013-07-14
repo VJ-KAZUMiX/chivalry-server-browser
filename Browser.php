@@ -37,7 +37,7 @@ class Browser {
     public function __construct() {
         $this->gameServerManager = GameServerManager::sharedManager();
         $this->mySmarty = new MySmarty();
-        $this->countryCodeAssoc = get_country_assoc();
+        $this->countryCodeAssoc = $this->gameServerManager->makeCountryAssoc();
         $this->appRoot = 'http://' . HTTP_HOST . HTTP_PATH;
 
         if (isset($_GET['serverId'])) {
