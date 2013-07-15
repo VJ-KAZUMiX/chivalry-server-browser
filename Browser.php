@@ -23,6 +23,7 @@ class Browser {
     public $pageTitle = "Chivalry Server Browser";
     public $appRoot;
     public $countryCodeAssoc;
+    public $continentCodeAssoc;
     public $numberOfActiveServersPerCountry;
 
     public $errorList = array();
@@ -38,6 +39,7 @@ class Browser {
         $this->gameServerManager = GameServerManager::sharedManager();
         $this->mySmarty = new MySmarty();
         $this->countryCodeAssoc = $this->gameServerManager->makeCountryAssoc();
+        $this->continentCodeAssoc = $this->gameServerManager->continentAssoc;
         $this->appRoot = 'http://' . HTTP_HOST . HTTP_PATH;
 
         if (isset($_GET['serverId'])) {
@@ -53,6 +55,16 @@ class Browser {
 
     private function getTargetCountryCodeArray() {
         $result = null;
+
+        // if the target is a continent, return a list of countries in the continent
+        if (isset($_GET['country']) && isset($this->continentCodeAssoc[$_GET['country']])) {
+            $continentCode = $_GET['country'];
+            $this->targetCountryCode = $continentCode;
+            $this->pageTitle = "{$this->continentCodeAssoc[$continentCode]} - {$this->pageTitle}";
+            $result = $this->gameServerManager->getCountryCodesInContinent($continentCode);
+            $this->storeNumberOfActiveServersPerCountry($continentCode);
+            return $result;
+        }
 
         $splitCountryCodeList = false;
         if (isset($_GET['country'])) {
@@ -72,7 +84,7 @@ class Browser {
             case 1:
                 $this->targetCountryCode = $validateCountryCodeList[0];
                 $this->pageTitle = "{$this->countryCodeAssoc[$validateCountryCodeList[0]]} - {$this->pageTitle}";
-                $result =$validateCountryCodeList;
+                $result = $validateCountryCodeList;
                 $this->storeNumberOfActiveServersPerCountry($validateCountryCodeList[0]);
                 break;
 
@@ -93,27 +105,38 @@ class Browser {
                 break;
         }
 
-//        if (isset($_GET['country']) && isset($this->countryCodeAssoc[$_GET['country']])) {
-//            // only 1 country is set
-//            $this->targetCountryCode = $_GET['country'];
-//
-//            $this->pageTitle = "{$this->countryCodeAssoc[$_GET['country']]} - {$this->pageTitle}";
-//
-//            $result = $_GET['country'];
-//        } else {
-//            $countryCode = geoip_country_code_by_addr(GameServerManager::getGeoIp(), $_SERVER['REMOTE_ADDR']);
-//            if (!$countryCode) {
-//                $countryCode = 'JP';
-//            }
-//            $this->targetCountryCode = $countryCode;
-//            $result = $countryCode;
-//        }
-
         return $result;
     }
 
     private function storeNumberOfActiveServersPerCountry($necessaryCountryCode) {
         $list = $this->gameServerManager->getNumberOfActiveServersPerCountry();
+
+        // continents
+        $gi = $this->gameServerManager->getGeoIp();
+        $GEOIP_COUNTRY_CODE_TO_NUMBER = $gi->GEOIP_COUNTRY_CODE_TO_NUMBER;
+        $GEOIP_CONTINENT_CODES = $gi->GEOIP_CONTINENT_CODES;
+        $continentList = array();
+        foreach ($list as $countryServerInfo) {
+            $countryCode = $countryServerInfo['country'];
+            $numberOfServers = $countryServerInfo['number_of_servers'];
+            if (!isset($GEOIP_COUNTRY_CODE_TO_NUMBER[$countryCode])) {
+                continue;
+            }
+            $countryNumber = $GEOIP_COUNTRY_CODE_TO_NUMBER[$countryCode];
+            $continentCode = 'CONTINENT_' . $GEOIP_CONTINENT_CODES[$countryNumber];
+            if (isset($continentList[$continentCode])) {
+                $continentList[$continentCode] += $numberOfServers;
+            } else {
+                $continentList[$continentCode] = +$numberOfServers;
+            }
+        }
+        ksort($continentList);
+        $continentRecordList = array();
+        foreach ($continentList as $countryCode => $servers) {
+            $continentRecordList[] = array('country' => $countryCode, 'number_of_servers' => $servers);
+        }
+
+        $list = array_merge($continentRecordList, $list);
 
         $this->numberOfActiveServersPerCountry = array();
         $necessaryFound = false;

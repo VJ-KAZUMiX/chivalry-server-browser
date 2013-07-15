@@ -684,6 +684,16 @@ class GameServerManager {
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public $continentAssoc = array (
+        "CONTINENT_AS" => "Asia",
+        "CONTINENT_EU" => "Europe",
+        "CONTINENT_NA" => "North America",
+        "CONTINENT_AF" => "Africa",
+        "CONTINENT_AN" => "Antarctica",
+        "CONTINENT_SA" => "South America",
+        "CONTINENT_OC" => "Oceania"
+    );
+
     public function makeCountryAssoc() {
         $result = array();
         $gi = $this->getGeoIp();
@@ -691,6 +701,29 @@ class GameServerManager {
             $result[$countryCode] = $gi->GEOIP_COUNTRY_NAMES[$number];
         }
         $result['ZZ'] = 'Unknown or Invalid Region';
+
+        // add continents
+        $result = array_merge($result, $this->continentAssoc);
+
+        return $result;
+    }
+
+    public function getCountryCodesInContinent($continentAssocCode) {
+        $splitTemp = explode('_', $continentAssocCode);
+        if (!$splitTemp || !isset($splitTemp[1])) {
+            return false;
+        }
+
+        $continentCode = $splitTemp[1];
+        $gi = $this->getGeoIp();
+        $result = array();
+
+        foreach ($gi->GEOIP_COUNTRY_CODES as $index => $countryCode) {
+            if ($continentCode == $gi->GEOIP_CONTINENT_CODES[$index]) {
+                $result[] = $countryCode;
+            }
+        }
+
         return $result;
     }
 }

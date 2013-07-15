@@ -118,6 +118,22 @@ class TestManager {
 
         }
     }
+
+    public function continentList() {
+        $gameServerManager = $this->gameServerManager;
+        $gi = $gameServerManager->getGeoIp();
+
+        $continents = array();
+        foreach ($gi->GEOIP_CONTINENT_CODES as $continentCode) {
+            if (isset($continents[$continentCode])) {
+                $continents[$continentCode]++;
+            } else {
+                $continents[$continentCode] = 1;
+            }
+        }
+
+        var_dump($continents);
+    }
 }
 
 $testManager = new TestManager();
@@ -127,6 +143,6 @@ $testManager = new TestManager();
 //$testManager->testGetServerList();
 //$testManager->testUpdateSync();
 //$testManager->testFsockopen();
-
+$testManager->continentList();
 
 

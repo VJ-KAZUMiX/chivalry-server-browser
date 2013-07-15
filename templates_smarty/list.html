@@ -65,7 +65,7 @@
             <select name="country" id="country">
             
             {foreach from=$data->numberOfActiveServersPerCountry item=record}
-            <option value="{$record.country}"{if $record.country == $data->targetCountryCode} selected="selected"{/if}>{$data->countryCodeAssoc[$record.country]} ({$record.servers})</option>
+            <option value="{$record.country}"{if $record.country == $data->targetCountryCode} selected="selected"{/if}>{if isset($data->continentCodeAssoc[$record.country])}* {/if}{$data->countryCodeAssoc[$record.country]} ({$record.servers})</option>
             {/foreach}
             
           </select>

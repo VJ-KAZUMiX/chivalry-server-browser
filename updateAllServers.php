@@ -22,8 +22,8 @@ $gameServerManager = GameServerManager::sharedManager();
 $sec = time();
 $min = floor($sec / 60);
 if ($min % 12 === 0 || isset($_GET['force'])) {
-    // Delete servers unresponded for 2 dayes
-    $gameServerManager->deleteUnrespondedServersWithTime( 60 * 60 * 24 * 2 );
+    // Delete servers unresponded for 7 dayes
+    $gameServerManager->deleteUnrespondedServersWithTime( 60 * 60 * 24 * 7 );
     $gameServerManager->updateWithMasterServer();
     $serverList = $gameServerManager->getServerList();
 } else {
