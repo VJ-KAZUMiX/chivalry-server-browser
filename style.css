@@ -24,12 +24,6 @@ a:hover {
 	color: #69C;
 	font-weight: bold;
 }
-.f16 .flag {
-	text-indent: -100px;
-	overflow: hidden;
-	vertical-align: bottom;
-}
-
 
 .noResponse {
 	color: #999;
@@ -39,6 +33,13 @@ a:hover {
 	color: #999;
 }
 
+.f16 .flag {
+	background-image: url(world-flags-sprite/images/flags16.png);
+	height: 0px;
+	overflow: hidden;
+	padding-top: 16px;
+	vertical-align: text-bottom;
+}
 
 form {
 	margin: 0px;
@@ -146,6 +147,7 @@ table.statistics tr.even {
 }
 
 table.statistics th.country {
+	text-align: left;
 	border-top-style: none;
 	border-right-style: none;
 	border-bottom-style: none;
@@ -162,9 +164,6 @@ p.lastUpdate {
 	padding-bottom: 0px;
 	padding-left: 0px;
 }
-
-
-
 
 #footer {
 	padding-top: 1em;

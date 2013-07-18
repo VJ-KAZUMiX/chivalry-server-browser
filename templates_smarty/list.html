@@ -4,6 +4,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>{$data->pageTitle|escape:'html'}</title>
+<link href="world-flags-sprite/stylesheets/flags16.css" rel="stylesheet" type="text/css" />
 <link href="style.css" rel="stylesheet" type="text/css" />
 
 <meta property="fb:app_id" content="636086276408468" />
@@ -79,7 +80,7 @@
   </div>
   <div class="contents">
     <div class="contentBody">
-      <table class="serverList" summary="server list">
+      <table class="serverList f16" summary="server list">
         <tr>
           <th colspan="3" align="left" scope="col">Server Name</th>
           <th align="center" scope="col">Players</th>
@@ -92,7 +93,7 @@
         {if $record.server_name === null}{continue}{/if}
         <tr{if $record.no_response_counter > 0} class="noResponse"{/if}>
           <td align="right">{$smarty.foreach.serverlist.iteration}</td>
-          <td>{$record.country}</td>
+          <td><span class="flag {$record.country|lower}" title="{$data->countryCodeAssoc[$record.country]}">{$record.country}</span></td>
           <td><a href="{$data->appRoot}?serverId={$record.game_server_id}">{$record.server_name|escape:'html'}</a></td>
           <td align="center">{$record.number_of_players} / <span class="maxPlayers">{$record.max_players}</span></td>
           <td align="left" class="mapName">{$record.map_name}</td>
@@ -160,7 +161,7 @@
     <div class="contentBody">
     
       {if count($data->statistics)}
-      <table class="statistics" summary="statistics">
+      <table class="statistics f16" summary="statistics">
         <tr class="hour">
           
           {foreach from=$data->statisticsHeader item=value name=header}
@@ -171,7 +172,7 @@
         
         {foreach name=eachCountry from=$data->statistics key=country item=countryRecord}
         <tr class="{cycle values="odd,even"}">
-          <th class="country" scope="row"><a href="{$data->appRoot}?country={$country}" title="{$data->countryCodeAssoc[$country]}">{$country}</a></th>
+          <th class="country" scope="row"><a href="{$data->appRoot}?country={$country}" title="{$data->countryCodeAssoc[$country]}"><span class="flag {$country|lower}"></span> {$country}</a></th>
           
           {foreach name=players from=$countryRecord item=value}<td>{$value}</td>{/foreach}
           
