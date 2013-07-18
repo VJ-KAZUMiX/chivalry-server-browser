@@ -24,6 +24,12 @@ a:hover {
 	color: #69C;
 	font-weight: bold;
 }
+.f16 .flag {
+	text-indent: -100px;
+	overflow: hidden;
+	vertical-align: bottom;
+}
+
 
 .noResponse {
 	color: #999;
