@@ -369,9 +369,9 @@ class GameServerManager {
         if (!$noResponse) {
             // the server responded
             //$sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `game_dir` = :game_dir, `game_desc` = :game_desc, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
-            $sql = "UPDATE `game_servers` SET `country` = :country, `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
+            $sql = "UPDATE `game_servers` SET `server_name` = :server_name, `game_port` = :game_port, `map_name` = :map_name, `max_players` = :max_players, `number_of_players` = :number_of_players, `no_response_counter` = :no_response_counter, `game_server_update` = :game_server_update WHERE `game_server_id` = :game_server_id";
             $updateServerStatement = $connection->prepare($sql);
-            $updateServerStatement->bindValue(':country', geoip_country_code_by_addr(self::getGeoIp(), $ipAddress), PDO::PARAM_STR);
+            //$updateServerStatement->bindValue(':country', geoip_country_code_by_addr(self::getGeoIp(), $ipAddress), PDO::PARAM_STR);
             $updateServerStatement->bindParam(':server_name', $serverInfo['serverName'], PDO::PARAM_STR);
             $updateServerStatement->bindParam(':game_port', $serverInfo['serverPort'], PDO::PARAM_INT);
             $updateServerStatement->bindParam(':map_name', $serverInfo['mapName'], PDO::PARAM_STR);
