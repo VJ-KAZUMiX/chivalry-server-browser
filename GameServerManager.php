@@ -9,7 +9,7 @@
 
 require_once "config.php";
 require_once "steam-condenser-php/lib/steam-condenser.php";
-require_once "GeoIP/geoip-api-php/geoip.inc";
+require_once "GeoIP/geoip-api-php/src/geoip.inc";
 
 // error handler
 function myErrorHandler($errno, $errstr, $errfile, $errline)
