@@ -40,7 +40,7 @@ class Browser {
         $this->mySmarty = new MySmarty();
         $this->countryCodeAssoc = $this->gameServerManager->makeCountryAssoc();
         $this->continentCodeAssoc = $this->gameServerManager->continentAssoc;
-        $this->appRoot = 'http://' . HTTP_HOST . HTTP_PATH;
+        $this->appRoot = 'https://' . HTTP_HOST . HTTP_PATH;
 
         if (isset($_GET['serverId'])) {
             $this->viewServerInfo($_GET['serverId']);
