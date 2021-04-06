@@ -1,9 +1,9 @@
 [submodule "steam-condenser-php"]
 	path = steam-condenser-php
-	url = git@github.com:koraktor/steam-condenser-php.git
+url=https://github.com/koraktor/steam-condenser-php.git
 [submodule "world-flags-sprite"]
 	path = world-flags-sprite
-	url = git@github.com:lafeber/world-flags-sprite.git
+url=https://github.com/lafeber/world-flags-sprite.git
 [submodule "GeoIP/geoip-api-php"]
 	path = GeoIP/geoip-api-php
-	url = git@github.com:maxmind/geoip-api-php.git
+url=https://github.com/maxmind/geoip-api-php.git
